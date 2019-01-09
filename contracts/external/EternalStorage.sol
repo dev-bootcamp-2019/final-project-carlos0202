@@ -1,5 +1,9 @@
 pragma solidity ^0.5.0;
 
+
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+
+
 /**
  * @title EternalStorage
  * @dev An ownable contract that can be used as a storage where the variables
@@ -12,7 +16,7 @@ pragma solidity ^0.5.0;
  * eternal storage:
  * https://github.com/yzhang1994/proof-of-existence-dapp
  */
-contract EternalStorage {
+contract EternalStorage is Ownable {
 
     struct Storage {
         mapping(bytes32 => bool) _bool;
@@ -25,41 +29,12 @@ contract EternalStorage {
 
     Storage internal s;
 
-    address public owner;
-    /**
-    * Transfer ownership event to emit an event when someone transfers the ownership
-    * of a document to another user. 
-    */
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
     /**
     * @dev The constructor sets the original `owner` of the
     * contract to the sender account.
     */
     constructor() public {
-        owner = msg.sender;
-    }
-
-    /**
-    * @dev Throws if called by any account other than the owner registered in the
-    * constructor during instantiation.
-    */
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can execute this method.");
-        _;
-    }
-
-    /**
-    * @dev Allows the current owner to transfer control of the contract to a
-    * newOwner.
-    * @param newOwner The address to transfer ownership to.
-    */
-    function transferOwnership(address newOwner) external onlyOwner {
-        require(
-            newOwner != address(0), 
-            "You must provide a valid new address to transfer ownership.");
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
+        Ownable(msg.sender);
     }
 
     /**
@@ -120,7 +95,7 @@ contract EternalStorage {
     * @dev Get the value stored of a boolean variable by the hash name
     * @param h The keccak256 hash of the variable name
     */
-    function getBoolean(bytes32 h) external view returns (bool){
+    function getBoolean(bytes32 h) external view onlyOwner returns (bool){
         return s._bool[h];
     }
 
@@ -128,7 +103,7 @@ contract EternalStorage {
     * @dev Get the value stored of a int variable by the hash name
     * @param h The keccak256 hash of the variable name
     */
-    function getInt(bytes32 h) external view returns (int){
+    function getInt(bytes32 h) external view onlyOwner returns (int){
         return s._int[h];
     }
 
@@ -136,7 +111,7 @@ contract EternalStorage {
     * @dev Get the value stored of a uint variable by the hash name
     * @param h The keccak256 hash of the variable name
     */
-    function getUint(bytes32 h) external view returns (uint256){
+    function getUint(bytes32 h) external view onlyOwner returns (uint256){
         return s._uint[h];
     }
 
@@ -144,7 +119,7 @@ contract EternalStorage {
     * @dev Get the value stored of a address variable by the hash name
     * @param h The keccak256 hash of the variable name
     */
-    function getAddress(bytes32 h) external view returns (address){
+    function getAddress(bytes32 h) external view onlyOwner returns (address){
         return s._address[h];
     }
 
@@ -152,7 +127,7 @@ contract EternalStorage {
     * @dev Get the value stored of a string variable by the hash name
     * @param h The keccak256 hash of the variable name
     */
-    function getString(bytes32 h) external view returns (string memory){
+    function getString(bytes32 h) external view onlyOwner returns (string memory){
         return s._string[h];
     }
 
@@ -160,39 +135,39 @@ contract EternalStorage {
     * @dev Get the value stored of a bytes variable by the hash name
     * @param h The keccak256 hash of the variable name
     */
-    function getBytes(bytes32 h) external view returns (bytes memory){
+    function getBytes(bytes32 h) external view onlyOwner returns (bytes memory){
         return s._bytes[h];
     }
 
      /**** Delete Methods ***********/
     
     /// @param _key The key for the record
-    function deleteAddress(bytes32 _key) external {
+    function deleteAddress(bytes32 _key) external onlyOwner {
         delete s._address[_key];
     }
 
     /// @param _key The key for the record
-    function deleteUint(bytes32 _key) external {
+    function deleteUint(bytes32 _key) external onlyOwner {
         delete s._uint[_key];
     }
 
     /// @param _key The key for the record
-    function deleteString(bytes32 _key) external {
+    function deleteString(bytes32 _key) external onlyOwner {
         delete s._string[_key];
     }
 
     /// @param _key The key for the record
-    function deleteBytes(bytes32 _key) external {
+    function deleteBytes(bytes32 _key) external onlyOwner {
         delete s._bytes[_key];
     }
     
     /// @param _key The key for the record
-    function deleteBool(bytes32 _key) external {
+    function deleteBool(bytes32 _key) external onlyOwner {
         delete s._bool[_key];
     }
     
     /// @param _key The key for the record
-    function deleteInt(bytes32 _key) external {
+    function deleteInt(bytes32 _key) external onlyOwner {
         delete s._int[_key];
     }
 }
