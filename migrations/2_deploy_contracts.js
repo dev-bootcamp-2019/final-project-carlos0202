@@ -1,5 +1,7 @@
-var SimpleStorage = artifacts.require("./SimpleStorage.sol");
+var EternalStorage = artifacts.require("./external/EternalStorage.sol");
+var MediaManager = artifacts.require("./MediaManager.sol");
 
-module.exports = function(deployer) {
-  deployer.deploy(SimpleStorage);
+module.exports = function(deployer, network, accounts) {
+    deployer.deploy(EternalStorage);
+    deployer.deploy(MediaManager);
 };

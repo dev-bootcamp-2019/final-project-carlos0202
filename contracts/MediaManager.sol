@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
 
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "./external/EternalStorage.sol";
@@ -22,8 +23,16 @@ contract MediaManager is Ownable, Pausable{
     EternalStorage public db;
 
     // Events of the contract
-    event MediaAdded(string indexed mediaHash, uint indexed mediaIndex, address indexed mediaOwner);
-    event MediaDeleted(string indexed mediaHash, uint indexed mediaIndex, address indexed mediaOwner);
+    event MediaAdded(
+        bytes32 indexed publicMediaHash, 
+        uint indexed mediaIndex, 
+        address indexed mediaOwner
+    );
+    event MediaDeleted(
+        bytes32 indexed publicMediaHash, 
+        uint indexed mediaIndex, 
+        address indexed mediaOwner
+    );
     event ContractTransfered(address indexed oldAddress, address indexed newAddress);
 
     // Contract's constructor
@@ -32,13 +41,14 @@ contract MediaManager is Ownable, Pausable{
         db = new EternalStorage();
         // initialize mapping indexes to use while saving or retrieving proof data
         // from EternalStorage.
-        // Store index of last added media. (set at 0 because no media exists when first instantiated)
+        // Store index of last added media. 
+        // (set at 0 because no media exists when first instantiated)
         db.setUint(getHashIndex("lastMediaIndex"), 0);
     }
 
     /** @dev Fallback to reject any ether sent to contract
     */
-    function () public { }
+    function () external { }
 
     // External functions
 
@@ -52,11 +62,11 @@ contract MediaManager is Ownable, Pausable{
     * @return success If the transaction is processed successfully
     */
     function upgradeContract(address newAddress) public onlyOwner returns (bool success) {
-        require(newAddress != address(0));
+        require(newAddress != address(0));        
+        // Emit the corresponding event
+        emit ContractTransfered(owner(), newAddress);
         // Transfer ownership of the state data to the new address
         db.transferOwnership(newAddress);
-        // Emit the corresponding event
-        emit ContractTransfered(this, newAddress);
 
         return true;
     }
@@ -72,12 +82,50 @@ contract MediaManager is Ownable, Pausable{
     * @return the hash to use as index for the corresponding mapping inside
     * the EternalStorage.
     */
-    function getHashIndex(string mappingName, uint index, string varName) 
+    function getHashIndex(string memory mappingName, uint index, string memory varName) 
         internal 
         pure 
-        returns (string nHash) 
+        returns (bytes32 nHash) 
     {
         nHash = keccak256(abi.encodePacked(mappingName, index, varName));
+    }
+
+    /** @dev Computes the hash to use as index to store a value in the .
+    * @param mappingName the name to use if we want to have some structured
+    * information pattern like struct while saving data in the EternalStorage.
+    * @param ownerAddress the owner of the resource to calculate this hash.
+    * @param varName a name to have as reference for the variable inside the
+    * mapping like a property of a struct in terms of reference.
+    * @return the hash to use as index for the corresponding mapping inside
+    * the EternalStorage.
+    */
+    function getHashIndex(
+        string memory mappingName, 
+        address ownerAddress, 
+        string memory varName
+    ) 
+        internal 
+        pure 
+        returns (bytes32 nHash) 
+    {
+        nHash = keccak256(abi.encodePacked(mappingName, ownerAddress, varName));
+    }
+
+    /** @dev Computes the hash to use as index to store a value in the .
+    * @param mappingName the name to use if we want to have some structured
+    * information pattern like struct while saving data in the EternalStorage.
+    * @param ownerAddress the owner of the resource to calculate this hash.
+    * @param varName a name to have as reference for the variable inside the
+    * mapping like a property of a struct in terms of reference.
+    * @return the hash to use as index for the corresponding mapping inside
+    * the EternalStorage.
+    */
+    function getHashIndex(string memory mappingName, address ownerAddress, uint varName) 
+        internal 
+        pure 
+        returns (bytes32 nHash) 
+    {
+        nHash = keccak256(abi.encodePacked(mappingName, ownerAddress, varName));
     }
 
     /** @dev Computes the hash to use as index to store a value in the .
@@ -88,10 +136,10 @@ contract MediaManager is Ownable, Pausable{
     * @return the hash to use as index for the corresponding mapping inside
     * the EternalStorage.
     */
-    function getHashIndex(string mappingName, string varName) 
+    function getHashIndex(string memory mappingName, string memory varName) 
         internal 
         pure 
-        returns (string nHash) 
+        returns (bytes32 nHash) 
     {
         nHash = keccak256(abi.encodePacked(mappingName, varName));
     }
@@ -102,19 +150,17 @@ contract MediaManager is Ownable, Pausable{
     * @return the hash to use as index for the corresponding mapping inside
     * the EternalStorage.
     */
-    function getHashIndex(string mappingName) 
+    function getHashIndex(string memory mappingName) 
         internal 
         pure 
-        returns (string nHash) 
+        returns (bytes32 nHash) 
     {
         nHash = keccak256(abi.encodePacked(mappingName));
     }
 
-    /** @dev Computes the hash to use as index to store a value in the .
-    * @param mappingName the name to use if we want to have some structured
-    * information pattern like struct while saving data in the EternalStorage.
-    * @return the hash to use as index for the corresponding mapping inside
-    * the EternalStorage.
+    /** @dev Reads the owner of a media file in the given index from storage.
+    * @param mediaIndex the index id stored for the media file.
+    * @return the address of the owner of this media file if found.
     */
     function getMediaOwner(uint mediaIndex) 
         internal 
@@ -122,7 +168,7 @@ contract MediaManager is Ownable, Pausable{
         returns (address mediaOwner) 
     {
         // Get the owner address of the media
-        mediaOWner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
+        mediaOwner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
     }
     
     /** @dev Registers an IPFS file hash and its extra data to  the contract's storage.
@@ -134,14 +180,14 @@ contract MediaManager is Ownable, Pausable{
     * in the blockchain if the transaction ocurred without errors.
     */
     function addOwnedMedia(
-        string mediaHash, 
+        string memory mediaHash, 
         bool isVideo, 
-        string title, 
-        string description
+        string memory title, 
+        string memory description
     ) 
         public 
         whenNotPaused() 
-        returns (string publicHash) 
+        returns (bytes32 publicHash) 
     {
         // The same media cannot be added twice
         require(db.getUint(getHashIndex('mediaHashMap', mediaHash)) == 0);
@@ -155,7 +201,7 @@ contract MediaManager is Ownable, Pausable{
 
         // Save main information aboud the media file to add
         // Save wether the uploaded media is a video property.
-        db.setBool(getHashIndex('mediaMap', mediaIndex, 'isVideo'), isVideo);
+        db.setBoolean(getHashIndex('mediaMap', mediaIndex, 'isVideo'), isVideo);
         // Save the associated title to the media.
         db.setString(getHashIndex('mediaMap', mediaIndex, 'title'), title);
         // Save the description associated to the media.
@@ -181,7 +227,7 @@ contract MediaManager is Ownable, Pausable{
         db.setUint(getHashIndex('lastMediaIndex'), mediaIndex);
 
         // emit corresponding event
-        emit MediaAdded(mediaHash, mediaIndex, msg.sender);
+        emit MediaAdded(publicHash, mediaIndex, msg.sender);
 
         return publicHash;
     }
@@ -190,7 +236,7 @@ contract MediaManager is Ownable, Pausable{
     * @param publicHash the IPFS file hash to delete.
     * @return boolean value indicating that the delete operation was successsful.
     */
-    function deleteOwnedMedia(string publicHash) 
+    function deleteOwnedMedia(bytes32 publicHash) 
         public 
         whenNotPaused() 
         returns (bool mediaDeleted) 
@@ -207,9 +253,6 @@ contract MediaManager is Ownable, Pausable{
 
         // Get saved media index for current caller of the method.
         uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', msg.sender, 'userMediaIndex'));
-        // Get the public hash that will be used as a reference for the stored
-        // media file instead of using the IPFS hash directly.
-        publicHash = getHashIndex('mediaHashMap', mediaHash);
 
         // Delete main information aboud the media file
         // Delete is a video property.
@@ -233,7 +276,7 @@ contract MediaManager is Ownable, Pausable{
         db.deleteUint(publicHash);
 
         // emit corresponding event
-        emit MediaDeleted(mediaHash, mediaIndex, msg.sender);
+        emit MediaDeleted(publicHash, mediaIndex, msg.sender);
         mediaDeleted = true;
 
         return mediaDeleted;
@@ -251,16 +294,16 @@ contract MediaManager is Ownable, Pausable{
     */
     function getMedia(uint mediaIndex) public view returns (
         bool isVideo,
-        string title,
-        string description,
+        string memory title,
+        string memory description,
         uint timestamp,
-        string mediaHash,
+        string memory mediaHash,
         address mediaOwner
     ) {
         require(mediaIndex > 0);
         // Get information aboud the media file added
         // Get is a video property.
-        isVideo = db.getBool(getHashIndex('mediaMap', mediaIndex, 'isVideo'));
+        isVideo = db.getBoolean(getHashIndex('mediaMap', mediaIndex, 'isVideo'));
         // Get the associated title to the media.
         title = db.getString(getHashIndex('mediaMap', mediaIndex, 'title'));
         // Get the description associated to the media.
@@ -270,7 +313,7 @@ contract MediaManager is Ownable, Pausable{
         // Get the media hash obtained fro IPFS
         mediaHash = db.getString(getHashIndex('mediaMap', mediaIndex, 'mediaHash'));
         // Get the owner address of the media
-        mediaOWner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
+        mediaOwner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
 
         return (isVideo, title, description, timestamp, mediaHash, mediaOwner);
     }
@@ -288,14 +331,14 @@ contract MediaManager is Ownable, Pausable{
     */
     function getUserMedia(address mediaOwner, uint mediaIndex) public view returns (
         bool isVideo,
-        string title,
-        string description,
+        string memory title,
+        string memory description,
         uint timestamp,
-        string mediaHash,
-        address mediaOwner
+        string memory mediaHash,
+        address owner
     ) {
         // Get the user media index from user's media array
-        uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', mediaOWner, 'userMediaIndex'));
+        uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', mediaOwner, 'userMediaIndex'));
         // Get the media index associated form the users's media array
         uint _mediaIndex = db.getUint(getHashIndex('userMediaMap', mediaOwner, mediaIndex));
         // verify the index and check for overflow/underflow.
@@ -310,7 +353,7 @@ contract MediaManager is Ownable, Pausable{
     * @param mediaHash the IPFS file hash to verify.
     * @return boolean indicating if media file exists.
     */
-    function checkIfExists(string mediaHash) public view returns (bool mediaExists) {
+    function checkIfExists(string memory mediaHash) public view returns (bool mediaExists) {
         mediaExists = db.getUint(getHashIndex('mediaHashMap', mediaHash)) > 0;
     }
 
@@ -318,8 +361,8 @@ contract MediaManager is Ownable, Pausable{
     * @param mediaHash the IPFS media file hash registered.
     * @return uint media file index if exists or zero (0).
     */
-    function getMediaIndexByHash(string mediaHash) public view returns (uint mediaIndex) {
-        mediaIndex = db.getUint(getMediaIndexByHash('mediaHashMap', mediaHash));
+    function getMediaIndexByHash(string memory mediaHash) public view returns (uint mediaIndex) {
+        mediaIndex = db.getUint(getHashIndex('mediaHashMap', mediaHash));
     }
 
     /** @dev Shortcut utility function to check wether a media file hash has been inserted
@@ -328,7 +371,7 @@ contract MediaManager is Ownable, Pausable{
     * to the blockchain by its owner.
     * @return boolean indicating if media file exists.
     */
-    function checkIfExistsByPublicHash(string publicHash) public view returns (bool mediaExists) {
+    function checkIfExistsByPublicHash(bytes32 publicHash) public view returns (bool mediaExists) {
         mediaExists = db.getUint(publicHash) > 0;
     }
 
@@ -337,7 +380,7 @@ contract MediaManager is Ownable, Pausable{
     * to the blockchain by its owner.
     * @return uint media file index if exists or zero (0).
     */
-    function getMediaIndexByPublicHash(string publicHash) public view returns (uint mediaIndex) {
+    function getMediaIndexByPublicHash(bytes32 publicHash) public view returns (uint mediaIndex) {
         mediaIndex = db.getUint(publicHash);
     }
 
@@ -351,12 +394,12 @@ contract MediaManager is Ownable, Pausable{
     * @return the media file hash obtained fro IPFS.
     * @return the address of the owner of this media file.
     */
-    function getMediaByPublicHash(string publicHash) public view returns (
+    function getMediaByPublicHash(bytes32 publicHash) public view returns (
         bool isVideo,
-        string title,
-        string description,
+        string memory title,
+        string memory description,
         uint timestamp,
-        string mediaHash,
+        string memory mediaHash,
         address mediaOwner
     ) {
         return getMedia(getMediaIndexByPublicHash(publicHash));
