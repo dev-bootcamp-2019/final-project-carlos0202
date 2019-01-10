@@ -12,6 +12,7 @@ contract("MediaManager", accounts => {
     let publicMediaHash;
     let mediaIndex;
     let mediaOwner;
+    const mediaFileHash = 'QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA';
 
     it("owner address should be the first address available.", async () => {
         // Checks if deployer address is the current owner of the contract
@@ -44,15 +45,13 @@ contract("MediaManager", accounts => {
 
 
     it("it should add, retrieve and delete a media file info.", async () => {
-        const mediaFileHash = 'QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA';
-
         // Try adding a new media file
         const result = await mediaManagerInstance.addOwnedMedia(
             mediaFileHash,
-            false,
+            true,
             'Media file title',
             'Media file description',
-            {from: accounts[0]}
+            {from: accounts[1]}
         );
         // Get event data
         let evtData = result.logs[0].args;
@@ -61,8 +60,39 @@ contract("MediaManager", accounts => {
         mediaOwner = evtData.mediaOwner;
 
         // Verify that public hashes match.    
-        // assert.equal(publicHash, publicMediaHash, "Hash from calling function must match the one returned from the event.");
         assert.equal(mediaIndex, 1, "The index of the first inserted file should be 1.");
-        assert.equal(accounts[0], mediaOwner, "The owner off the added file should match the one using in the function call.");
+        assert.equal(accounts[1], mediaOwner, "The owner off the added file should match the one using in the function call.");
+
+        // Try getting the file that has been just inserted using another user.
+        let mediaInfo = await mediaManagerInstance.getMedia.call(mediaIndex, {from: accounts[2]});
+
+        assert.equal(mediaFileHash, mediaInfo.mediaHash, "Media file hash must match the one used to insert the file.");
+        assert.equal('Media file title', mediaInfo.title, "Title must match the media title stored.");
+        assert.equal(mediaOwner, mediaInfo.mediaOwner, "The owner of the media file should be the one that added the file.");
+
+        // Try deleting record by other address than the owner itself.
+        // Must fail if it's not the right address
+        await expectThrow(
+            mediaManagerInstance.deleteOwnedMedia(publicMediaHash, {from: accounts[2]}),
+            "Only the owner of the media file can delete it!"
+        );
+
+        // Try deleting record using its real owner.
+        let response = await mediaManagerInstance.deleteOwnedMedia(publicMediaHash, {from: accounts[1]});
+        evtData = response.logs[0];
+        assert.equal(evtData.event, "MediaDeleted", "The event was not emited successfully");
+        assert.equal(evtData.args.mediaOwner, accounts[1], "The resulting owner of the event should be the owner.");
+
+        // Try getting the file that has been just deleted using another user.
+        // The result must be a throw with the error of require telling that the 
+        // media index should be greater than 0.
+        await expectThrow(
+            mediaManagerInstance.getMediaByPublicHash(publicMediaHash, {from: accounts[2]}),
+            "Media index must be greater than 0."
+        );
+    });
+
+    it("check for non saved media in storage should return false.", async () => {
+
     });
 });

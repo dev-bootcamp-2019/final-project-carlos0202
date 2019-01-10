@@ -300,7 +300,7 @@ contract MediaManager is Ownable, Pausable{
         string memory mediaHash,
         address mediaOwner
     ) {
-        require(mediaIndex > 0);
+        require(mediaIndex > 0, "Media index must be greater than 0.");
         // Get information aboud the media file added
         // Get is a video property.
         isVideo = db.getBoolean(getHashIndex('mediaMap', mediaIndex, 'isVideo'));
