@@ -55,7 +55,7 @@ contract("MediaManager", accounts => {
         );
         // Get event data
         let evtData = result.logs[0].args;
-        const publicMediaHash = evtData.publicMediaHash;
+        publicMediaHash = evtData.publicMediaHash;
         mediaIndex = evtData.mediaIndex;
         mediaOwner = evtData.mediaOwner;
 
@@ -90,9 +90,62 @@ contract("MediaManager", accounts => {
             mediaManagerInstance.getMediaByPublicHash(publicMediaHash, {from: accounts[2]}),
             "Media index must be greater than 0."
         );
+        // Searching the media file by its index must throw an error as well
+        // indicating that the media was not found.
+        await expectThrow(
+            mediaManagerInstance.getMedia(mediaIndex, {from: accounts[2]}),
+            "Media file not found or it's not assigned to the right owner."
+        );
     });
 
     it("check for non saved media in storage should return false.", async () => {
+        let mediaIndex = 1;
+        // Try getting the file that has been just deleted using another user.
+        // The result must be a throw with the error of require telling that the 
+        // media index should be greater than 0.
+        await expectThrow(
+            mediaManagerInstance.getMedia(mediaIndex, {from: accounts[2]}),
+            "Media file not found or it's not assigned to the right owner."
+        );
+    });
 
+    it("call to marked functions on paused state should throw an error.", async() => {
+        // change machine state in contract to paused so that marked functions
+        // should not be executed while in paused state.
+        await mediaManagerInstance.pause({from: accounts[0]});
+
+        // Adding a media file can only be done while the state machine is not
+        // in paused state, so the next call should throw an error.
+        await expectThrow(
+            mediaManagerInstance.addOwnedMedia(
+                mediaFileHash,
+                true,
+                'Media file title',
+                'Media file description',
+                {from: accounts[1]}
+            )
+        );
+
+        // change machine state in contract to not paused so that marked functions
+        // should be executed again.
+        await mediaManagerInstance.unpause({from: accounts[0]});
+
+        // Try adding a new media file once again. It should be possible now
+        // that the state machine is not in paused state.
+        const result = await mediaManagerInstance.addOwnedMedia(
+            mediaFileHash,
+            true,
+            'Media file title',
+            'Media file description',
+            {from: accounts[1]}
+        );
+        // Get event data
+        let evtData = result.logs[0].args;
+        mediaIndex = evtData.mediaIndex;
+        mediaOwner = evtData.mediaOwner;
+
+        // Verify that public hashes match.    
+        assert.equal(mediaIndex, 1, "The index of the first inserted file should be 1.");
+        assert.equal(accounts[1], mediaOwner, "The owner off the added file should match the one using in the function call.");
     });
 });

@@ -301,6 +301,14 @@ contract MediaManager is Ownable, Pausable{
         address mediaOwner
     ) {
         require(mediaIndex > 0, "Media index must be greater than 0.");
+        // Get saved media index for current caller of the method.
+        uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', msg.sender, 'userMediaIndex'));
+        // Get the owner address of the media
+        mediaOwner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
+        require(
+            db.getUint(getHashIndex('userMediaMap', mediaOwner, userMediaIndex)) == mediaIndex,
+            "Media file not found or it's not assigned to the right owner."
+        );
         // Get information aboud the media file added
         // Get is a video property.
         isVideo = db.getBoolean(getHashIndex('mediaMap', mediaIndex, 'isVideo'));
@@ -312,8 +320,7 @@ contract MediaManager is Ownable, Pausable{
         timestamp = db.getUint(getHashIndex('mediaMap', mediaIndex, 'timestamp'));
         // Get the media hash obtained fro IPFS
         mediaHash = db.getString(getHashIndex('mediaMap', mediaIndex, 'mediaHash'));
-        // Get the owner address of the media
-        mediaOwner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
+        
 
         return (isVideo, title, description, timestamp, mediaHash, mediaOwner);
     }
