@@ -168,7 +168,7 @@ contract MediaManager is Ownable, Pausable{
         returns (address mediaOwner) 
     {
         // Get the owner address of the media
-        mediaOwner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
+        mediaOwner = db.getAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"));
     }
     
     /** @dev Registers an IPFS file hash and its extra data to  the contract's storage.
@@ -190,41 +190,41 @@ contract MediaManager is Ownable, Pausable{
         returns (bytes32 publicHash) 
     {
         // The same media cannot be added twice
-        require(db.getUint(getHashIndex('mediaHashMap', mediaHash)) == 0);
+        require(db.getUint(getHashIndex("mediaHashMap", mediaHash)) == 0, "Media file should not exists.");
         // Get saved media index count starting at 0 and add 1 to insert first at 1;
         uint mediaIndex = db.getUint(getHashIndex("lastMediaIndex")).add(1);
         // Get saved media index for current caller of the method.
-        uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', msg.sender, 'userMediaIndex'));
+        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
         // Get the public hash that will be used as a reference for the stored
         // media file instead of using the IPFS hash directly.
-        publicHash = getHashIndex('mediaHashMap', mediaHash);
+        publicHash = getHashIndex("mediaHashMap", mediaHash);
 
         // Save main information aboud the media file to add
         // Save wether the uploaded media is a video property.
-        db.setBoolean(getHashIndex('mediaMap', mediaIndex, 'isVideo'), isVideo);
+        db.setBoolean(getHashIndex("mediaMap", mediaIndex, "isVideo"), isVideo);
         // Save the associated title to the media.
-        db.setString(getHashIndex('mediaMap', mediaIndex, 'title'), title);
+        db.setString(getHashIndex("mediaMap", mediaIndex, "title"), title);
         // Save the description associated to the media.
-        db.setString(getHashIndex('mediaMap', mediaIndex, 'description'), description);
+        db.setString(getHashIndex("mediaMap", mediaIndex, "description"), description);
         // Save the timestamp of this transaction in the mapping
-        db.setUint(getHashIndex('mediaMap', mediaIndex, 'timestamp'), now);
+        db.setUint(getHashIndex("mediaMap", mediaIndex, "timestamp"), now);
         // Save the media hash obtained fro IPFS
-        db.setString(getHashIndex('mediaMap', mediaIndex, 'mediaHash'), mediaHash);
+        db.setString(getHashIndex("mediaMap", mediaIndex, "mediaHash"), mediaHash);
         // Save the owner address of the media
-        db.setAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'), msg.sender);
+        db.setAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"), msg.sender);
 
         // Save information regarding the map of users and its media files.
         // Store the reference of the current media file associated with a 
         // key created using the users address and the current index in the map.
-        db.setUint(getHashIndex('userMediaMap', msg.sender, userMediaIndex), mediaIndex);
+        db.setUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex), mediaIndex);
         // Store the index for the next media file to add in the map array.
-        db.setUint(getHashIndex('userMediaMap', msg.sender, 'userMediaIndex'), userMediaIndex.add(1));
+        db.setUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"), userMediaIndex.add(1));
 
         // Save index information of the media hash and its current position in the maps.
         // Save current media index with the hash as its key
         db.setUint(publicHash, mediaIndex);
         // Update info regarding the last inserterd media index
-        db.setUint(getHashIndex('lastMediaIndex'), mediaIndex);
+        db.setUint(getHashIndex("lastMediaIndex"), mediaIndex);
 
         // emit corresponding event
         emit MediaAdded(publicHash, mediaIndex, msg.sender);
@@ -244,34 +244,34 @@ contract MediaManager is Ownable, Pausable{
         // Get saved media index of the media file.
         uint mediaIndex = db.getUint(publicHash);
         // The media file must exists in the storage.
-        require(mediaIndex != 0, 'The media file to delete must exist!');
+        require(mediaIndex != 0, "The media file to delete must exist!");
         // The owner of the media file must be the one calling this method
         require(
             getMediaOwner(mediaIndex) == msg.sender,
-            'Only the owner of the media file can delete it!'
+            "Only the owner of the media file can delete it!"
         );
 
         // Get saved media index for current caller of the method.
-        uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', msg.sender, 'userMediaIndex'));
+        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
 
         // Delete main information aboud the media file
         // Delete is a video property.
-        db.deleteBool(getHashIndex('mediaMap', mediaIndex, 'isVideo'));
+        db.deleteBool(getHashIndex("mediaMap", mediaIndex, "isVideo"));
         // Delete the associated title to the media.
-        db.deleteString(getHashIndex('mediaMap', mediaIndex, 'title'));
+        db.deleteString(getHashIndex("mediaMap", mediaIndex, "title"));
         // Delete the description associated to the media.
-        db.deleteString(getHashIndex('mediaMap', mediaIndex, 'description'));
+        db.deleteString(getHashIndex("mediaMap", mediaIndex, "description"));
         // Delete the timestamp of this transaction in the mapping
-        db.deleteUint(getHashIndex('mediaMap', mediaIndex, 'timestamp'));
+        db.deleteUint(getHashIndex("mediaMap", mediaIndex, "timestamp"));
         // Delete the media hash obtained fro IPFS
-        db.deleteString(getHashIndex('mediaMap', mediaIndex, 'mediaHash'));
+        db.deleteString(getHashIndex("mediaMap", mediaIndex, "mediaHash"));
         // Delete the owner address of the media
-        db.deleteAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
+        db.deleteAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"));
 
         // delete information regarding the map of users and its media files.
         // delete the reference of the current media file associated with a 
         // key created using the users address and the current index in the map.
-        db.deleteUint(getHashIndex('userMediaMap', msg.sender, userMediaIndex));
+        db.deleteUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex));
         // Delete current media index with the hash as its key
         db.deleteUint(publicHash);
 
@@ -302,24 +302,24 @@ contract MediaManager is Ownable, Pausable{
     ) {
         require(mediaIndex > 0, "Media index must be greater than 0.");
         // Get saved media index for current caller of the method.
-        uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', msg.sender, 'userMediaIndex'));
+        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
         // Get the owner address of the media
-        mediaOwner = db.getAddress(getHashIndex('mediaMap', mediaIndex, 'mediaOwner'));
+        mediaOwner = db.getAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"));
         require(
-            db.getUint(getHashIndex('userMediaMap', mediaOwner, userMediaIndex)) == mediaIndex,
+            db.getUint(getHashIndex("userMediaMap", mediaOwner, userMediaIndex)) == mediaIndex,
             "Media file not found or it's not assigned to the right owner."
         );
         // Get information aboud the media file added
         // Get is a video property.
-        isVideo = db.getBoolean(getHashIndex('mediaMap', mediaIndex, 'isVideo'));
+        isVideo = db.getBoolean(getHashIndex("mediaMap", mediaIndex, "isVideo"));
         // Get the associated title to the media.
-        title = db.getString(getHashIndex('mediaMap', mediaIndex, 'title'));
+        title = db.getString(getHashIndex("mediaMap", mediaIndex, "title"));
         // Get the description associated to the media.
-        description = db.getString(getHashIndex('mediaMap', mediaIndex, 'description'));
+        description = db.getString(getHashIndex("mediaMap", mediaIndex, "description"));
         // Get the timestamp of this transaction in the mapping
-        timestamp = db.getUint(getHashIndex('mediaMap', mediaIndex, 'timestamp'));
+        timestamp = db.getUint(getHashIndex("mediaMap", mediaIndex, "timestamp"));
         // Get the media hash obtained fro IPFS
-        mediaHash = db.getString(getHashIndex('mediaMap', mediaIndex, 'mediaHash'));
+        mediaHash = db.getString(getHashIndex("mediaMap", mediaIndex, "mediaHash"));
         
 
         return (isVideo, title, description, timestamp, mediaHash, mediaOwner);
@@ -345,11 +345,11 @@ contract MediaManager is Ownable, Pausable{
         address owner
     ) {
         // Get the user media index from user's media array
-        uint userMediaIndex = db.getUint(getHashIndex('userMediaMap', mediaOwner, 'userMediaIndex'));
+        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, "userMediaIndex"));
         // Get the media index associated form the users's media array
-        uint _mediaIndex = db.getUint(getHashIndex('userMediaMap', mediaOwner, mediaIndex));
+        uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex));
         // verify the index and check for overflow/underflow.
-        require(mediaIndex <= userMediaIndex.sub(1));
+        require(mediaIndex <= userMediaIndex.sub(1), "Overflow detected.");
 
         // return the associated media file.
         return getMedia(_mediaIndex);
@@ -361,7 +361,7 @@ contract MediaManager is Ownable, Pausable{
     * @return boolean indicating if media file exists.
     */
     function checkIfExists(string memory mediaHash) public view returns (bool mediaExists) {
-        mediaExists = db.getUint(getHashIndex('mediaHashMap', mediaHash)) > 0;
+        mediaExists = db.getUint(getHashIndex("mediaHashMap", mediaHash)) > 0;
     }
 
     /** @dev Shortcut utility function to read a media file's index by its hash.
@@ -369,7 +369,7 @@ contract MediaManager is Ownable, Pausable{
     * @return uint media file index if exists or zero (0).
     */
     function getMediaIndexByHash(string memory mediaHash) public view returns (uint mediaIndex) {
-        mediaIndex = db.getUint(getHashIndex('mediaHashMap', mediaHash));
+        mediaIndex = db.getUint(getHashIndex("mediaHashMap", mediaHash));
     }
 
     /** @dev Shortcut utility function to check wether a media file hash has been inserted
@@ -416,7 +416,7 @@ contract MediaManager is Ownable, Pausable{
     * @return Last inserted media file index.
     */
     function lastMediaIndex() public view returns (uint) {
-        return db.getUint(getHashIndex('lastMediaIndex'));
+        return db.getUint(getHashIndex("lastMediaIndex"));
     }
     
 }
