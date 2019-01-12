@@ -20,7 +20,7 @@ contract MediaManager is Ownable, Pausable{
     using SafeMath for uint;
     
     // State variables of the contract
-    EternalStorage public db;
+    EternalStorage internal db;
 
     // Events of the contract
     event MediaAdded(
@@ -49,12 +49,6 @@ contract MediaManager is Ownable, Pausable{
     /** @dev Fallback to reject any ether sent to contract
     */
     function () external { }
-
-    // External functions
-
-    // External functions that are view
-
-    // External functions that are pure
 
     // Public functions
     /** @dev Give the contract proxy to a new contract by allowing it to manipulate storage
