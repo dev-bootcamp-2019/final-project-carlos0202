@@ -62,7 +62,7 @@ contract MediaManager is Ownable, Pausable{
     * @return success If the transaction is processed successfully
     */
     function upgradeContract(address newAddress) public onlyOwner returns (bool success) {
-        require(newAddress != address(0));        
+        require(newAddress != address(0), "should provide a valid address to upgrade.");        
         // Emit the corresponding event
         emit ContractTransfered(owner(), newAddress);
         // Transfer ownership of the state data to the new address
