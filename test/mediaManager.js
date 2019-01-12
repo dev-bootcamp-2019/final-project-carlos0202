@@ -212,4 +212,37 @@ contract("MediaManager", accounts => {
             }, 'MediaAdded event should be emitted with correct parameters');
         });
     });
+
+    describe("Contract upgradability tests.",async () => {
+        // Try calling upgradeContract using a different account than the owner.
+        it("calling upgradeContract using a non owner account should throw an error.", async () => {
+            // Set state machine to paused prior to transfer ownership.
+            await mediaManagerInstance.pause({from: accounts[0]});
+            await truffleAssert.fails(
+                mediaManagerInstance.upgradeContract(accounts[4], {from: accounts[3]}),
+                truffleAssert.ErrorType.REVERT
+            );
+        });
+
+        // Try calling upgradeContract using owner's account to an invalid new address should
+        // throw an error.
+        it("calling upgradeContract using an invalid new address should fail.", async () => {
+            let invalidAddress = '0x0000000000000000000000000000000000000000';
+            await truffleAssert.fails(
+                mediaManagerInstance.upgradeContract(invalidAddress, {from: accounts[0]}),
+                truffleAssert.ErrorType.REVERT
+            );
+        });
+
+        // Try calling upgradeContract using owner's account. Should pass an emit an event.
+        it("calling upgradeContract using owner account must emit contractTransferred event. (if paused state)", async () => {
+            
+            let result = await mediaManagerInstance.upgradeContract(accounts[4], {from: accounts[0]});
+
+            await truffleAssert.eventEmitted(result, "ContractTransferred", (ev) => {
+                return ev.oldAddress = accounts[0] && ev.newAddress == accounts[4];
+            }, "Should emit ContractTransferred event with correct parameters.");
+        });
+        
+    });
 });

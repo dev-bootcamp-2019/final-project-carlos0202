@@ -33,7 +33,7 @@ contract MediaManager is Ownable, Pausable{
         uint indexed mediaIndex, 
         address indexed mediaOwner
     );
-    event ContractTransfered(address indexed oldAddress, address indexed newAddress);
+    event ContractTransferred(address indexed oldAddress, address indexed newAddress);
 
     // Contract's constructor
     constructor() public {
@@ -51,14 +51,22 @@ contract MediaManager is Ownable, Pausable{
     function () external { }
 
     // Public functions
-    /** @dev Give the contract proxy to a new contract by allowing it to manipulate storage
+    /** @dev Give the contract proxy to a new contract by allowing it to manipulate storage.
+    * This function execution was marked to be only possible when the contract's state
+    * machine is in paused state.  That means that access to sensitive functionality in the
+    * contract should be paused prior to call this function.
     * @param newAddress the address of new contract proxy deployed.
     * @return success If the transaction is processed successfully
     */
-    function upgradeContract(address newAddress) public onlyOwner returns (bool success) {
+    function upgradeContract(address newAddress)
+        public 
+        onlyOwner 
+        whenPaused 
+        returns (bool success) 
+    {
         require(newAddress != address(0), "should provide a valid address to upgrade.");        
         // Emit the corresponding event
-        emit ContractTransfered(owner(), newAddress);
+        emit ContractTransferred(owner(), newAddress);
         // Transfer ownership of the state data to the new address
         db.transferOwnership(newAddress);
 
@@ -184,11 +192,16 @@ contract MediaManager is Ownable, Pausable{
         returns (bytes32 publicHash) 
     {
         // The same media cannot be added twice
-        require(db.getUint(getHashIndex("mediaHashMap", mediaHash)) == 0, "Media file should not exists.");
+        require(
+            db.getUint(getHashIndex("mediaHashMap", mediaHash)) == 0, 
+            "Media file should not exists."
+        );
         // Get saved media index count starting at 0 and add 1 to insert first at 1;
         uint mediaIndex = db.getUint(getHashIndex("lastMediaIndex")).add(1);
         // Get saved media index for current caller of the method.
-        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
+        uint userMediaIndex = db.getUint(
+            getHashIndex("userMediaMap", msg.sender, "userMediaIndex")
+        );
         // Get the public hash that will be used as a reference for the stored
         // media file instead of using the IPFS hash directly.
         publicHash = getHashIndex("mediaHashMap", mediaHash);
@@ -212,7 +225,10 @@ contract MediaManager is Ownable, Pausable{
         // key created using the users address and the current index in the map.
         db.setUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex), mediaIndex);
         // Store the index for the next media file to add in the map array.
-        db.setUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"), userMediaIndex.add(1));
+        db.setUint(
+            getHashIndex("userMediaMap", msg.sender, "userMediaIndex"), 
+            userMediaIndex.add(1)
+        );
 
         // Save index information of the media hash and its current position in the maps.
         // Save current media index with the hash as its key
@@ -246,7 +262,9 @@ contract MediaManager is Ownable, Pausable{
         );
 
         // Get saved media index for current caller of the method.
-        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
+        uint userMediaIndex = db.getUint(
+            getHashIndex("userMediaMap", msg.sender, "userMediaIndex")
+        );
 
         // Delete main information aboud the media file
         // Delete is a video property.
@@ -296,7 +314,9 @@ contract MediaManager is Ownable, Pausable{
     ) {
         require(mediaIndex > 0, "Media index must be greater than 0.");
         // Get saved media index for current caller of the method.
-        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
+        uint userMediaIndex = db.getUint(
+            getHashIndex("userMediaMap", msg.sender, "userMediaIndex")
+        );
         // Get the owner address of the media
         mediaOwner = db.getAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"));
         require(
@@ -339,7 +359,9 @@ contract MediaManager is Ownable, Pausable{
         address owner
     ) {
         // Get the user media index from user's media array
-        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, "userMediaIndex"));
+        uint userMediaIndex = db.getUint(
+            getHashIndex("userMediaMap", mediaOwner, "userMediaIndex")
+        );
         // Get the media index associated form the users's media array
         uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex));
         // verify the index and check for overflow/underflow.
@@ -372,7 +394,11 @@ contract MediaManager is Ownable, Pausable{
     * to the blockchain by its owner.
     * @return boolean indicating if media file exists.
     */
-    function checkIfExistsByPublicHash(bytes32 publicHash) public view returns (bool mediaExists) {
+    function checkIfExistsByPublicHash(bytes32 publicHash) 
+        public 
+        view 
+        returns (bool mediaExists) 
+    {
         mediaExists = db.getUint(publicHash) > 0;
     }
 
