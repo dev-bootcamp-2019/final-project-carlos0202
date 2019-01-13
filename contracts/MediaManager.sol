@@ -196,6 +196,12 @@ contract MediaManager is Ownable, Pausable{
             db.getUint(getHashIndex("mediaHashMap", mediaHash)) == 0, 
             "Media file should not exists."
         );
+
+        // The owner should be a valid address
+        require(
+            msg.sender != address(0),
+            "The owner address must be a valid one!!!"
+        );
         // Get saved media index count starting at 0 and add 1 to insert first at 1;
         uint mediaIndex = db.getUint(getHashIndex("lastMediaIndex")).add(1);
         // Get saved media index for current caller of the method.
@@ -320,7 +326,7 @@ contract MediaManager is Ownable, Pausable{
         // Get the owner address of the media
         mediaOwner = db.getAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"));
         require(
-            db.getUint(getHashIndex("userMediaMap", mediaOwner, userMediaIndex)) == mediaIndex,
+            mediaOwner != address(0),
             "Media file not found or it's not assigned to the right owner."
         );
         // Get information aboud the media file added
@@ -363,9 +369,9 @@ contract MediaManager is Ownable, Pausable{
             getHashIndex("userMediaMap", mediaOwner, "userMediaIndex")
         );
         // Get the media index associated form the users's media array
-        uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex));
+        uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, userMediaIndex));
         // verify the index and check for overflow/underflow.
-        require(mediaIndex <= userMediaIndex.sub(1), "Overflow detected.");
+        require(_mediaIndex <= mediaIndex.sub(1), "Overflow detected.");
 
         // return the associated media file.
         return getMedia(_mediaIndex);
