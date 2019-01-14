@@ -8,11 +8,13 @@ import {
 import { connect } from "react-redux";
 
 import "./Navbar.css";
+import UploadMedia from "./UploadMedia";
 
 const NavItem = props => {
-    const pageURI = window.location.pathname + window.location.search
+    const pageURI = window.location.pathname + window.location.search;
     const isActive = (props.path === pageURI) ? "active" : "";
-    const aClassName = props.disabled ? "nav-link disabled" : "nav-link"
+    const aClassName = props.disabled ? "nav-link disabled" : "nav-link";
+
     return (
         <li className={`nav-item ${isActive}`}>
             {(props.to) ?
@@ -47,41 +49,45 @@ class Navbar extends Component {
 
         return (
             <Router>
-                <div className="container-fluid">
-                    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                        <Link className="navbar-brand" to="/">My Media Collection</Link>
-                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
+                <div className="my-app">
+                    <header>
+                        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                            <Link className="navbar-brand" to="/">My Media Collection</Link>
+                            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <span className="navbar-toggler-icon"></span>
+                            </button>
 
-                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul className="navbar-nav mr-auto">
-                                <NavItem to="/" name="Home" />
-                                <NavItem to="/upload-media" name="Upload" />
-                                <NavItem to="/media-gallery" name="Gallery" />
-                                <NavItem to="/verify-media" name="Verify" />
-                                
-                            </ul>
-                            <ul className="navbar-nav justify-content-end">
-                                <NavItem className="nav-right">
-                                    <span>
-                                        Logged as: <a className="pop" data-toggle="popover" title="Logged User Address"
-                                        data-content={this.props.account}><i className="fa fa-eye"></i></a></span>
-                                </NavItem>
-                            </ul>
-                            <form className="form-inline my-2 my-lg-0">
-                                <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
-                                <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                            </form>
-                        </div>
-                    </nav>
-                    <div className="container-fluid">
+                            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                                <ul className="navbar-nav mr-auto">
+                                    <NavItem to="/" name="Home" />
+                                    <NavItem to="/upload-media" name="Upload" />
+                                    <NavItem to="/media-gallery" name="Gallery" />
+                                    <NavItem to="/verify-media" name="Verify" />
+
+                                </ul>
+                                <ul className="navbar-nav justify-content-end">
+                                    <NavItem className="nav-right">
+                                        <span>
+                                            Logged as: <a className="pop" data-toggle="popover" title="Logged User Address"
+                                                data-content={this.props.account}><i className="fa fa-eye"></i></a></span>
+                                    </NavItem>
+                                </ul>
+                                <form className="form-inline my-2 my-lg-0">
+                                    <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
+                                    <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                                </form>
+                            </div>
+                        </nav>
+                    </header>
+                    <main role="main" className="container">
                         <Switch>
                             <Route
                                 path="/"
                                 exact
                                 render={() => (
-                                    <div className="card-header">Home</div>
+                                    <CardWrapper header="Home">
+                                        <h1>Home</h1>
+                                    </CardWrapper>
                                 )}
                             />
                             <Route
@@ -89,7 +95,7 @@ class Navbar extends Component {
                                 exact
                                 render={() => (
                                     <CardWrapper header="Media Upload Form">
-                                        <h1>Form Goes Here</h1>
+                                        <UploadMedia />
                                     </CardWrapper>
                                 )}
                             />
@@ -97,18 +103,22 @@ class Navbar extends Component {
                                 path="/media-gallery"
                                 exact
                                 render={() => (
-                                    <h1>My media Gallery</h1>
+                                    <CardWrapper header="My Media Gallery">
+                                        <h1>My media Gallery</h1>
+                                    </CardWrapper>
                                 )}
                             />
                             <Route
                                 path="/verify-media"
                                 exact
                                 render={() => (
-                                    <h1>Verify Uploaded Media</h1>
+                                    <CardWrapper header="Verify Uploaded Media">
+                                        <h1>Verify Uploaded Media</h1>
+                                    </CardWrapper>
                                 )}
                             />
                         </Switch>
-                    </div>
+                    </main>
                 </div>
             </Router>
         );
