@@ -177,7 +177,7 @@ contract MediaManager is Ownable, Pausable{
     * @param mediaHash the IPFS file hash to register.
     * @param isVideo determines if the hash stored corresponds to a video uploaded to IPFS.
     * @param title a title to give to the upload media for screening purposes.
-    * @param description a short description to give about the uploaded media.
+    * @param tags list of tags relevant to the uploaded media.
     * @return the publicHash that would be used as a proof of the existence of the media file
     * in the blockchain if the transaction ocurred without errors.
     */
@@ -185,7 +185,7 @@ contract MediaManager is Ownable, Pausable{
         string memory mediaHash, 
         bool isVideo, 
         string memory title, 
-        string memory description
+        string memory tags
     ) 
         public 
         whenNotPaused() 
@@ -201,7 +201,7 @@ contract MediaManager is Ownable, Pausable{
         require(
             msg.sender != address(0),
             "The owner address must be a valid one!!!"
-        );
+        ); 
         // Get saved media index count starting at 0 and add 1 to insert first at 1;
         uint mediaIndex = db.getUint(getHashIndex("lastMediaIndex")).add(1);
         // Get saved media index for current caller of the method.
@@ -217,8 +217,8 @@ contract MediaManager is Ownable, Pausable{
         db.setBoolean(getHashIndex("mediaMap", mediaIndex, "isVideo"), isVideo);
         // Save the associated title to the media.
         db.setString(getHashIndex("mediaMap", mediaIndex, "title"), title);
-        // Save the description associated to the media.
-        db.setString(getHashIndex("mediaMap", mediaIndex, "description"), description);
+        // Save the tags associated to the media.
+        db.setString(getHashIndex("mediaMap", mediaIndex, "tags"), tags);
         // Save the timestamp of this transaction in the mapping
         db.setUint(getHashIndex("mediaMap", mediaIndex, "timestamp"), now);
         // Save the media hash obtained fro IPFS
@@ -230,6 +230,8 @@ contract MediaManager is Ownable, Pausable{
         // Store the reference of the current media file associated with a 
         // key created using the users address and the current index in the map.
         db.setUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex), mediaIndex);
+        // map owner to the current mediaIndex beign inserted.
+        db.setUint(getHashIndex("userMediaMap", msg.sender, mediaIndex), mediaIndex);
         // Store the index for the next media file to add in the map array.
         db.setUint(
             getHashIndex("userMediaMap", msg.sender, "userMediaIndex"), 
@@ -277,8 +279,8 @@ contract MediaManager is Ownable, Pausable{
         db.deleteBool(getHashIndex("mediaMap", mediaIndex, "isVideo"));
         // Delete the associated title to the media.
         db.deleteString(getHashIndex("mediaMap", mediaIndex, "title"));
-        // Delete the description associated to the media.
-        db.deleteString(getHashIndex("mediaMap", mediaIndex, "description"));
+        // Delete the tags associated to the media.
+        db.deleteString(getHashIndex("mediaMap", mediaIndex, "tags"));
         // Delete the timestamp of this transaction in the mapping
         db.deleteUint(getHashIndex("mediaMap", mediaIndex, "timestamp"));
         // Delete the media hash obtained fro IPFS
@@ -305,7 +307,7 @@ contract MediaManager is Ownable, Pausable{
     * @param mediaIndex - index of registered media file in the storage.
     * @return the media file is a video (isVideo).
     * @return associated title of the media file (title).
-    * @return associated description of the media file (description).
+    * @return associated tags of the media file (tags).
     * @return the timestamp when media file was saved in the blockchain.
     * @return the media file hash obtained fro IPFS.
     * @return the address of the owner of this media file.
@@ -313,20 +315,17 @@ contract MediaManager is Ownable, Pausable{
     function getMedia(uint mediaIndex) public view returns (
         bool isVideo,
         string memory title,
-        string memory description,
+        string memory tags,
         uint timestamp,
         string memory mediaHash,
         address mediaOwner
     ) {
         require(mediaIndex > 0, "Media index must be greater than 0.");
-        // Get saved media index for current caller of the method.
-        uint userMediaIndex = db.getUint(
-            getHashIndex("userMediaMap", msg.sender, "userMediaIndex")
-        );
         // Get the owner address of the media
         mediaOwner = db.getAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"));
         require(
-            mediaOwner != address(0),
+            mediaOwner != address(0) && 
+            db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex)) == mediaIndex,
             "Media file not found or it's not assigned to the right owner."
         );
         // Get information aboud the media file added
@@ -334,15 +333,15 @@ contract MediaManager is Ownable, Pausable{
         isVideo = db.getBoolean(getHashIndex("mediaMap", mediaIndex, "isVideo"));
         // Get the associated title to the media.
         title = db.getString(getHashIndex("mediaMap", mediaIndex, "title"));
-        // Get the description associated to the media.
-        description = db.getString(getHashIndex("mediaMap", mediaIndex, "description"));
+        // Get the tags associated to the media.
+        tags = db.getString(getHashIndex("mediaMap", mediaIndex, "tags"));
         // Get the timestamp of this transaction in the mapping
         timestamp = db.getUint(getHashIndex("mediaMap", mediaIndex, "timestamp"));
         // Get the media hash obtained fro IPFS
         mediaHash = db.getString(getHashIndex("mediaMap", mediaIndex, "mediaHash"));
         
 
-        return (isVideo, title, description, timestamp, mediaHash, mediaOwner);
+        return (isVideo, title, tags, timestamp, mediaHash, mediaOwner);
     }
 
     /** @dev Returns all the information stored about a media file given a media owner and 
@@ -351,7 +350,7 @@ contract MediaManager is Ownable, Pausable{
     * @param mediaIndex - Index of saved media file in user's media array.
     * @return the media file is a video (isVideo).
     * @return associated title of the media file (title).
-    * @return associated description of the media file (description).
+    * @return associated tags of the media file.
     * @return the timestamp when media file was saved in the blockchain.
     * @return the media file hash obtained fro IPFS.
     * @return the address of the owner of this media file.
@@ -359,17 +358,13 @@ contract MediaManager is Ownable, Pausable{
     function getUserMedia(address mediaOwner, uint mediaIndex) public view returns (
         bool isVideo,
         string memory title,
-        string memory description,
+        string memory tags,
         uint timestamp,
         string memory mediaHash,
         address owner
     ) {
-        // Get the user media index from user's media array
-        uint userMediaIndex = db.getUint(
-            getHashIndex("userMediaMap", mediaOwner, "userMediaIndex")
-        );
         // Get the media index associated form the users's media array
-        uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, userMediaIndex));
+        uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex));
         // verify the index and check for overflow/underflow.
         require(_mediaIndex <= mediaIndex.sub(1), "Overflow detected.");
 
@@ -422,7 +417,7 @@ contract MediaManager is Ownable, Pausable{
     * @param publicHash the IPFS media file hash saved.
     * @return the media file is a video (isVideo).
     * @return associated title of the media file (title).
-    * @return associated description of the media file (description).
+    * @return associated tags of the media file.
     * @return the timestamp when media file was saved in the blockchain.
     * @return the media file hash obtained fro IPFS.
     * @return the address of the owner of this media file.
@@ -430,7 +425,7 @@ contract MediaManager is Ownable, Pausable{
     function getMediaByPublicHash(bytes32 publicHash) public view returns (
         bool isVideo,
         string memory title,
-        string memory description,
+        string memory tags,
         uint timestamp,
         string memory mediaHash,
         address mediaOwner

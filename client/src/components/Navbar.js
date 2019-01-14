@@ -1,0 +1,125 @@
+import React, { Component } from "react";
+import {
+    BrowserRouter as Router,
+    Route,
+    Link,
+    Switch
+} from "react-router-dom";
+import { connect } from "react-redux";
+
+import "./Navbar.css";
+
+const NavItem = props => {
+    const pageURI = window.location.pathname + window.location.search
+    const isActive = (props.path === pageURI) ? "active" : "";
+    const aClassName = props.disabled ? "nav-link disabled" : "nav-link"
+    return (
+        <li className={`nav-item ${isActive}`}>
+            {(props.to) ?
+                <Link to={props.to} className={aClassName + " " + props.className}>
+                    {props.name || props.children}
+                    {(props.path === pageURI) ? (<span className="sr-only">(current)</span>) : ''}
+                </Link> :
+                <span className="nav-link">{props.children}</span>
+            }
+        </li>
+    );
+}
+
+const CardWrapper = props => {
+    return (
+        <div className="card" id="AppBody">
+            <div className="card-header"><h3>{props.header}</h3></div>
+            <div className="card-body">
+                {props.children}
+            </div>
+        </div>
+    );
+}
+
+class Navbar extends Component {
+
+    componentDidMount() {
+        window.$('[data-toggle="popover"]').popover();
+    }
+
+    render() {
+
+        return (
+            <Router>
+                <div className="container-fluid">
+                    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                        <Link className="navbar-brand" to="/">My Media Collection</Link>
+                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul className="navbar-nav mr-auto">
+                                <NavItem to="/" name="Home" />
+                                <NavItem to="/upload-media" name="Upload" />
+                                <NavItem to="/media-gallery" name="Gallery" />
+                                <NavItem to="/verify-media" name="Verify" />
+                                
+                            </ul>
+                            <ul className="navbar-nav justify-content-end">
+                                <NavItem className="nav-right">
+                                    <span>
+                                        Logged as: <a className="pop" data-toggle="popover" title="Logged User Address"
+                                        data-content={this.props.account}><i className="fa fa-eye"></i></a></span>
+                                </NavItem>
+                            </ul>
+                            <form className="form-inline my-2 my-lg-0">
+                                <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
+                                <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                            </form>
+                        </div>
+                    </nav>
+                    <div className="container-fluid">
+                        <Switch>
+                            <Route
+                                path="/"
+                                exact
+                                render={() => (
+                                    <div className="card-header">Home</div>
+                                )}
+                            />
+                            <Route
+                                path="/upload-media"
+                                exact
+                                render={() => (
+                                    <CardWrapper header="Media Upload Form">
+                                        <h1>Form Goes Here</h1>
+                                    </CardWrapper>
+                                )}
+                            />
+                            <Route
+                                path="/media-gallery"
+                                exact
+                                render={() => (
+                                    <h1>My media Gallery</h1>
+                                )}
+                            />
+                            <Route
+                                path="/verify-media"
+                                exact
+                                render={() => (
+                                    <h1>Verify Uploaded Media</h1>
+                                )}
+                            />
+                        </Switch>
+                    </div>
+                </div>
+            </Router>
+        );
+    }
+}
+
+function mapStateToProps({ initialize }) {
+    return { ...initialize };
+}
+
+export default connect(
+    mapStateToProps,
+    null
+)(Navbar);

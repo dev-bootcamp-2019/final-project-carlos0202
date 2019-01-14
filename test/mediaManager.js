@@ -62,7 +62,7 @@ contract("MediaManager", accounts => {
                 mediaFileHash,
                 true,
                 "Media file title",
-                "Media file description", {
+                "Tag 1, Tag 2, Tag 3", {
                     from: accounts[1]
                 }
             );
@@ -172,7 +172,7 @@ contract("MediaManager", accounts => {
                     mediaFileHash,
                     true,
                     "Media file title",
-                    "Media file description", {
+                    "Tag 1, Tag 2, Tag 3", {
                         from: accounts[1]
                     }
                 ),
@@ -201,7 +201,7 @@ contract("MediaManager", accounts => {
                 mediaFileHash,
                 true,
                 "Media file title",
-                "Media file description", {
+                "Tag 1, Tag 2, Tag 3", {
                     from: accounts[2]
                 }
             );
