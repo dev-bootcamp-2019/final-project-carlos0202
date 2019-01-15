@@ -24873,12 +24873,12 @@
         }
       },
       "links": {},
-      "address": "0x8339D17F89FE4A111ED63bb09944694cfE0bfa9B",
-      "transactionHash": "0x4c69a8a826b1b80cb95ca8e48e9b9d64d45c4a2f51c804043f0538163ae003e0"
+      "address": "0xE76cFb944e54639890C6Df7225f44FfF698506CF",
+      "transactionHash": "0x4e506bd5990e632ef8b392d24cf1e45ca99966575a2126ca6b882ab8e3f36631"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-13T16:55:41.116Z",
+  "updatedAt": "2019-01-14T23:01:47.215Z",
   "devdoc": {
     "methods": {
       "addOwnedMedia(string,bool,string,string)": {

@@ -7669,12 +7669,12 @@
         }
       },
       "links": {},
-      "address": "0x8b56fC60f127d45efDfa6795C7BFCa24C01A8353",
-      "transactionHash": "0x764cdf274f38a1c765651a4fc4b4689766449f9c81edc64047df9d1122736824"
+      "address": "0x313B4D996B433060427189844f52A10dF952F8ae",
+      "transactionHash": "0xb4dc9cdb0af4c1cfae8c4f71858953505b04eb102addbd3b5f10d73aaa3859e2"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-13T16:55:41.105Z",
+  "updatedAt": "2019-01-14T23:01:47.222Z",
   "devdoc": {
     "details": "An ownable contract that can be used as a storage where the variables\r are stored in a set of mappings indexed by hash names.\r Contract importing following the guidelines in the zeppelinos upgreadability\r contracts post: \r https://github.com/zeppelinos/labs/tree/ff479995ed90c4dbb5e32294fa95b16a22bb99c8/upgradeability_using_eternal_storage\r \r",
     "methods": {
