@@ -27,10 +27,35 @@ export const fetchWeb3 = () => {
             dispatch({ type: T.FETCH_WEB3, payload: result });
         } catch (e) {
             console.log(e);
-            dispatch({ 
-                type: T.FETCH_WEB3, 
-                payload: {web3: null, accounts: null, contractInstance: null, account: null} 
+            dispatch({
+                type: T.FETCH_WEB3,
+                payload: { web3: null, accounts: null, contractInstance: null, account: null }
             });
         }
     };
 };
+
+export const addMedia = (mediaInfo, history) => {
+    console.log(mediaInfo);
+    return async dispatch => {
+        history.push('/');
+
+        dispatch({
+            type: T.PUSH_FILE,
+            payload: { ...mediaInfo }
+        });
+    }
+}
+
+function dataURItoBlob(dataURI) {
+    var byteString = atob(dataURI.split(',')[1]);
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab, 0, byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    return new Blob([ab], { type: mimeString });
+}

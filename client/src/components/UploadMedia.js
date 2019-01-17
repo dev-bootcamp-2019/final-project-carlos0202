@@ -3,7 +3,7 @@ import {
     BrowserRouter as Router,
     Route,
     Link,
-    Switch
+    Switch, withRouter
 } from "react-router-dom";
 import { connect } from "react-redux";
 import InputField, { CheckBoxField, FileField, hasGetUserMedia, WebCamCapture } from "./shared/Input";
@@ -14,14 +14,15 @@ class UploadMedia extends Component {
 
     handleSubmit(values) {
         console.log(values);
+        console.log(this.props);
+        this.props.addMedia(values, this.props.history);
     }
 
     render() {
-        console.log(this.props);
         const { pristine, reset, submitting } = this.props;
 
         return (
-            <form onSubmit={this.props.handleSubmit(this.handleSubmit)} noValidate>
+            <form onSubmit={this.props.handleSubmit(this.handleSubmit.bind(this))} noValidate>
                 <legend></legend>
                 <hr />
                 <Field name="title" id="title" type="text" inputLabel="Associated Title with the Media" component={InputField} />
@@ -80,5 +81,5 @@ function mapStateToProps(state) {
 export default connect(
     mapStateToProps,
     actions
-)(UploadMedia);
+)(withRouter(UploadMedia));
 
