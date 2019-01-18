@@ -24,12 +24,12 @@ contract MediaManager is Ownable, Pausable{
 
     // Events of the contract
     event MediaAdded(
-        bytes32 indexed publicMediaHash, 
+        string indexed mediaHash, 
         uint indexed mediaIndex, 
         address indexed mediaOwner
     );
     event MediaDeleted(
-        bytes32 indexed publicMediaHash, 
+        string indexed mediaHash, 
         uint indexed mediaIndex, 
         address indexed mediaOwner
     );
@@ -178,8 +178,7 @@ contract MediaManager is Ownable, Pausable{
     * @param isVideo determines if the hash stored corresponds to a video uploaded to IPFS.
     * @param title a title to give to the upload media for screening purposes.
     * @param tags list of tags relevant to the uploaded media.
-    * @return the publicHash that would be used as a proof of the existence of the media file
-    * in the blockchain if the transaction ocurred without errors.
+    * @return the index of the newly added media file.
     */
     function addOwnedMedia(
         string memory mediaHash, 
@@ -189,7 +188,7 @@ contract MediaManager is Ownable, Pausable{
     ) 
         public 
         whenNotPaused() 
-        returns (bytes32 publicHash) 
+        returns (uint mediaFileIndex) 
     {
         // The same media cannot be added twice
         require(
@@ -210,7 +209,7 @@ contract MediaManager is Ownable, Pausable{
         );
         // Get the public hash that will be used as a reference for the stored
         // media file instead of using the IPFS hash directly.
-        publicHash = getHashIndex("mediaHashMap", mediaHash);
+        bytes32 hashIndex = getHashIndex("mediaHashMap", mediaHash);
 
         // Save main information aboud the media file to add
         // Save wether the uploaded media is a video property.
@@ -240,27 +239,28 @@ contract MediaManager is Ownable, Pausable{
 
         // Save index information of the media hash and its current position in the maps.
         // Save current media index with the hash as its key
-        db.setUint(publicHash, mediaIndex);
+        db.setUint(hashIndex, mediaIndex);
         // Update info regarding the last inserterd media index
         db.setUint(getHashIndex("lastMediaIndex"), mediaIndex);
 
         // emit corresponding event
-        emit MediaAdded(publicHash, mediaIndex, msg.sender);
+        emit MediaAdded(mediaHash, mediaIndex, msg.sender);
 
-        return publicHash;
+        return mediaIndex;
     }
 
     /** @dev Deletes an IPFS file hash and its extra data of the contract's storage.
-    * @param publicHash the IPFS file hash to delete.
+    * @param mediaHash the IPFS file hash to delete.
     * @return boolean value indicating that the delete operation was successsful.
     */
-    function deleteOwnedMedia(bytes32 publicHash) 
+    function deleteOwnedMedia(string memory mediaHash) 
         public 
         whenNotPaused() 
         returns (bool mediaDeleted) 
     {
+        bytes32 hashIndex = getHashIndex("mediaHashMap", mediaHash);
         // Get saved media index of the media file.
-        uint mediaIndex = db.getUint(publicHash);
+        uint mediaIndex = db.getUint(hashIndex);
         // The media file must exists in the storage.
         require(mediaIndex != 0, "The media file to delete must exist!");
         // The owner of the media file must be the one calling this method
@@ -293,10 +293,10 @@ contract MediaManager is Ownable, Pausable{
         // key created using the users address and the current index in the map.
         db.deleteUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex));
         // Delete current media index with the hash as its key
-        db.deleteUint(publicHash);
+        db.deleteUint(hashIndex);
 
         // emit corresponding event
-        emit MediaDeleted(publicHash, mediaIndex, msg.sender);
+        emit MediaDeleted(mediaHash, mediaIndex, msg.sender);
         mediaDeleted = true;
 
         return mediaDeleted;
@@ -389,32 +389,9 @@ contract MediaManager is Ownable, Pausable{
         mediaIndex = db.getUint(getHashIndex("mediaHashMap", mediaHash));
     }
 
-    /** @dev Shortcut utility function to check wether a media file hash has been inserted
-    * in the storage using the IPFS media file hash to check for existence.
-    * @param publicHash the public media file hash computed when the media was added
-    * to the blockchain by its owner.
-    * @return boolean indicating if media file exists.
-    */
-    function checkIfExistsByPublicHash(bytes32 publicHash) 
-        public 
-        view 
-        returns (bool mediaExists) 
-    {
-        mediaExists = db.getUint(publicHash) > 0;
-    }
-
-    /** @dev Shortcut utility function to read a media file's index by its hash.
-    * @param publicHash the public media file hash computed when the media was added
-    * to the blockchain by its owner.
-    * @return uint media file index if exists or zero (0).
-    */
-    function getMediaIndexByPublicHash(bytes32 publicHash) public view returns (uint mediaIndex) {
-        mediaIndex = db.getUint(publicHash);
-    }
-
-    /** @dev Shortcut utility function to get all the information of a given media file
+     /** @dev Shortcut utility function to get all the information of a given media file
     * by using its media hash to obtain the data.
-    * @param publicHash the IPFS media file hash saved.
+    * @param mediaFileHash the IPFS media file hash saved.
     * @return the media file is a video (isVideo).
     * @return associated title of the media file (title).
     * @return associated tags of the media file.
@@ -422,7 +399,7 @@ contract MediaManager is Ownable, Pausable{
     * @return the media file hash obtained fro IPFS.
     * @return the address of the owner of this media file.
     */
-    function getMediaByPublicHash(bytes32 publicHash) public view returns (
+    function getMediaByMediaHash(string memory mediaFileHash) public view returns (
         bool isVideo,
         string memory title,
         string memory tags,
@@ -430,7 +407,7 @@ contract MediaManager is Ownable, Pausable{
         string memory mediaHash,
         address mediaOwner
     ) {
-        return getMedia(getMediaIndexByPublicHash(publicHash));
+        return getMedia(getMediaIndexByHash(mediaFileHash));
     }
 
     /** @dev Reads the last inserted media file index from storage.

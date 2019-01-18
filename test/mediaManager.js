@@ -10,10 +10,10 @@ contract("MediaManager", accounts => {
         });
     });
     // global variables to use in all the tests
-    let publicMediaHash;
+    let outMediaHash;
     let mediaIndex;
     let mediaOwner;
-    const mediaFileHash = 'QmT4AeWE9Q9EaoyLJiqaZuYQ8mJeq4ZBncjjFH9dQ9uDVA';
+    var mediaFileHash = "0x017dfd85d4f6cb4dcd715a88101f7b1f06cd1e009b2327a0809d01eb9c91f233";
 
     describe("Ownership of the contract tests.", async() => {
         it("owner address should be the first address available.", async () => {
@@ -68,11 +68,11 @@ contract("MediaManager", accounts => {
             );
 
             await truffleAssert.eventEmitted(result, 'MediaAdded', (ev) => {
-                publicMediaHash = ev.publicMediaHash;
+                outMediaHash = ev.mediaHash;
                 mediaIndex = ev.mediaIndex;
                 mediaOwner = ev.mediaOwner;
-
-                return ev.mediaIndex == 1 && ev.mediaOwner == accounts[1];
+                console.log(ev);
+                return ev.mediaIndex == 1 && outMediaHash == mediaFileHash && ev.mediaOwner == accounts[1];
             }, 'MediaAdded event should be emitted with correct parameters');
         });
 
@@ -91,7 +91,7 @@ contract("MediaManager", accounts => {
             // Try deleting record by other address than the owner itself.
             // Must fail if it's not the right address
             await truffleAssert.fails(
-                mediaManagerInstance.deleteOwnedMedia(publicMediaHash, {
+                mediaManagerInstance.deleteOwnedMedia(outMediaHash, {
                     from: accounts[2]
                 }),
                 truffleAssert.ErrorType.REVERT,
@@ -101,7 +101,7 @@ contract("MediaManager", accounts => {
 
         it("it should allow media deletion to its owner.", async () => {
             // Try deleting record using its real owner.
-            let response = await mediaManagerInstance.deleteOwnedMedia(publicMediaHash, {
+            let response = await mediaManagerInstance.deleteOwnedMedia(outMediaHash, {
                 from: accounts[1]
             });
             // Check that event was emitted with the relevant data.
@@ -116,7 +116,7 @@ contract("MediaManager", accounts => {
             // The result must be a throw with the error of require telling that the 
             // media index should be greater than 0.
             await truffleAssert.fails(
-                mediaManagerInstance.getMediaByPublicHash(publicMediaHash, {
+                mediaManagerInstance.getMediaByMediaHash(outMediaHash, {
                     from: accounts[2]
                 }),
                 truffleAssert.ErrorType.REVERT,
