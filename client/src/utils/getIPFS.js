@@ -7,4 +7,6 @@ const currentConfig = process.env.REACT_APP_USE_LOCAL_IPFS ?
 const ipfs = new IPFS(currentConfig);
 console.log(currentConfig);
 
+export const getFileUrl = `${currentConfig.protocol}://${currentConfig.host}:${currentConfig.port}/ipfs/`;
+
 export default ipfs;

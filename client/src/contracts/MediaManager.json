@@ -24097,14 +24097,9 @@
   "networks": {
     "5777": {
       "events": {
-        "0xa2a0b7c18b441acd36cf9cb3799959a9bb31d4473f21cd98eb8d03a26892f8aa": {
+        "0xec1eaa554d3431fe08500976b9747e5da87a1b04d6011c27fcacfeb0738af1bf": {
           "anonymous": false,
           "inputs": [
-            {
-              "indexed": true,
-              "name": "publicMediaHash",
-              "type": "bytes32"
-            },
             {
               "indexed": true,
               "name": "mediaIndex",
@@ -24118,15 +24113,15 @@
           ],
           "name": "MediaAdded",
           "type": "event",
-          "signature": "0xa2a0b7c18b441acd36cf9cb3799959a9bb31d4473f21cd98eb8d03a26892f8aa"
+          "signature": "0xec1eaa554d3431fe08500976b9747e5da87a1b04d6011c27fcacfeb0738af1bf"
         },
-        "0x46217d4902fffae2bd41ced10c21d9b91ec9c47a01dd44a4d7d9991c435a579c": {
+        "0x4c7c8eb618978135035cd45dd7b979289e80fd5eb9d1c905feebe4b3d9b2ac8e": {
           "anonymous": false,
           "inputs": [
             {
               "indexed": true,
-              "name": "publicMediaHash",
-              "type": "bytes32"
+              "name": "mediaHash",
+              "type": "string"
             },
             {
               "indexed": true,
@@ -24141,9 +24136,9 @@
           ],
           "name": "MediaDeleted",
           "type": "event",
-          "signature": "0x46217d4902fffae2bd41ced10c21d9b91ec9c47a01dd44a4d7d9991c435a579c"
+          "signature": "0x4c7c8eb618978135035cd45dd7b979289e80fd5eb9d1c905feebe4b3d9b2ac8e"
         },
-        "0x2c9bf8f5bb4744a270a43e5fcd368bf073123a1ffba6ff0b39276bf5dd20e6a4": {
+        "0x5497ab95c72084fe0dd76e16276fb0a3daadbb67efb881f9a49ebf05c27c94d0": {
           "anonymous": false,
           "inputs": [
             {
@@ -24157,9 +24152,9 @@
               "type": "address"
             }
           ],
-          "name": "ContractTransfered",
+          "name": "ContractTransferred",
           "type": "event",
-          "signature": "0x2c9bf8f5bb4744a270a43e5fcd368bf073123a1ffba6ff0b39276bf5dd20e6a4"
+          "signature": "0x5497ab95c72084fe0dd76e16276fb0a3daadbb67efb881f9a49ebf05c27c94d0"
         },
         "0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258": {
           "anonymous": false,
@@ -24231,24 +24226,6 @@
           "type": "event",
           "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
         },
-        "0x5497ab95c72084fe0dd76e16276fb0a3daadbb67efb881f9a49ebf05c27c94d0": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "oldAddress",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "name": "newAddress",
-              "type": "address"
-            }
-          ],
-          "name": "ContractTransferred",
-          "type": "event",
-          "signature": "0x5497ab95c72084fe0dd76e16276fb0a3daadbb67efb881f9a49ebf05c27c94d0"
-        },
         "0x60b72bcc96d61b69c7f5f652a9ca80b5095ff580c6015145bef6c26c1350b465": {
           "anonymous": false,
           "inputs": [
@@ -24271,38 +24248,15 @@
           "name": "MediaAdded",
           "type": "event",
           "signature": "0x60b72bcc96d61b69c7f5f652a9ca80b5095ff580c6015145bef6c26c1350b465"
-        },
-        "0x4c7c8eb618978135035cd45dd7b979289e80fd5eb9d1c905feebe4b3d9b2ac8e": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "mediaHash",
-              "type": "string"
-            },
-            {
-              "indexed": true,
-              "name": "mediaIndex",
-              "type": "uint256"
-            },
-            {
-              "indexed": true,
-              "name": "mediaOwner",
-              "type": "address"
-            }
-          ],
-          "name": "MediaDeleted",
-          "type": "event",
-          "signature": "0x4c7c8eb618978135035cd45dd7b979289e80fd5eb9d1c905feebe4b3d9b2ac8e"
         }
       },
       "links": {},
-      "address": "0xBF9D3Cb83b7997817afea8F29A4691267683395c",
-      "transactionHash": "0x86ea2211e3d0c5539f34288c9c735449266686673729648617246534485c06f9"
+      "address": "0x11007F1e1C67c1757612B7bFFae0A62102BdAeea",
+      "transactionHash": "0x2a8eceff8b37f92a76063fb1d0119b389dbecc2bf3cea90c4df5f83344d6e2ad"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-18T00:56:13.684Z",
+  "updatedAt": "2019-01-18T01:48:50.350Z",
   "devdoc": {
     "methods": {
       "addOwnedMedia(string,bool,string,string)": {

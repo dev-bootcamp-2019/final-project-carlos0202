@@ -13,14 +13,16 @@ import * as actions from "../actions";
 class UploadMedia extends Component {
 
     handleSubmit(values) {
+        const { contractInstance, account, web3, history } = this.props;
         console.log(values);
         console.log(this.props);
-        this.props.addMedia(values, this.props.history);
+        this.props.addMedia(values,  contractInstance, account, web3, history);
     }
 
     render() {
         const { pristine, reset, submitting } = this.props;
-
+        console.log(this.props.contractInstance.methods.addOwnedMedia("", false, "", ""));
+        console.log(this.props.contractInstance);
         return (
             <form onSubmit={this.props.handleSubmit(this.handleSubmit.bind(this))} noValidate>
                 <legend></legend>
