@@ -51,14 +51,19 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
             }
 
             let filesAdded = await ipfs.files
-                .add(Buffer.from(mediaFileData.mediaFile));
-            const file = filesAdded[0];
-            mediaFileData.initHash = getFileUrl + file.hash;
-            console.log(file.hash);
-            const { mediaFile, ...dataToSave } = mediaFileData;
-            const data = Buffer.from(JSON.stringify(dataToSave));
+                .add(Buffer.from(mediaFileData.mediaFile), {onlyHash: true});
+            const calculatedHash = filesAdded[0].hash;
+            
+            let fileExists = await contractInstance.checkIfExists(calculatedHash, {from: account});
 
-            let attributesHash = await ipfs.files.add(data);
+            if(fileExists){
+                let error = "The file you are atempting to add already exists, please add a different one.";
+                alert(error);
+
+                throw(error);
+            }
+
+            let attributesHash = await ipfs.files.add(Buffer.from(mediaFileData.mediaFile));
             attrHash = attributesHash[0].hash;
             console.log(attrHash);
 
@@ -93,14 +98,14 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
 
             dispatch({
                 type: T.PUSH_FILE,
-                payload: { ...mediaInfo, ...evt, mediaAdded: true }
+                payload: { ...mediaInfo, attrHash, ...evt, mediaAdded: true }
             });
         } catch (ex) {
             alert('Error ocurred while adding your file. Please check your info and try again later');
             console.log(ex);
             dispatch({
                 type: T.PUSH_FILE,
-                payload: { ...mediaInfo, mediaAdded: false }
+                payload: { mediaAdded: false }
             });
         }
     }
