@@ -24,12 +24,12 @@ contract MediaManager is Ownable, Pausable{
 
     // Events of the contract
     event MediaAdded(
-        string indexed mediaHash, 
+        string mediaHash, 
         uint indexed mediaIndex, 
         address indexed mediaOwner
     );
     event MediaDeleted(
-        string indexed mediaHash, 
+        string mediaHash, 
         uint indexed mediaIndex, 
         address indexed mediaOwner
     );

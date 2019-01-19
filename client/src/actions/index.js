@@ -2,6 +2,7 @@ import getWeb3 from '../utils/getWeb3';
 import ipfs, { getFileUrl } from '../utils/getIPFS';
 import * as T from './types';
 import MediaManagerContract from "../contracts/MediaManager.json";
+var contract = require("truffle-contract");
 
 export const fetchWeb3 = () => {
     return async dispatch => {
@@ -11,16 +12,9 @@ export const fetchWeb3 = () => {
             const accounts = await web3.eth.getAccounts();
 
             // Get the contract instance.
-            const networkId = await web3.eth.net.getId();
-            let deployedNetwork = MediaManagerContract.networks[networkId];
-            console.log(web3);
-            console.log(networkId);
-            console.log(MediaManagerContract.networks);
-            console.log(deployedNetwork);
-            const contractInstance = new web3.eth.Contract(
-                MediaManagerContract.abi,
-                deployedNetwork && deployedNetwork.address,
-            );
+            const mediaManager = contract(MediaManagerContract);
+            mediaManager.setProvider(web3.currentProvider);
+            const contractInstance = await mediaManager.deployed();
             let result = {
                 web3,
                 accounts,
@@ -40,73 +34,75 @@ export const fetchWeb3 = () => {
 };
 
 export const addMedia = (mediaInfo, contractInstance, account, web3, history) => {
-    console.log(mediaInfo);
-    console.log(web3);
     let attrHash;
     return async dispatch => {
-        var mediaFileData = { ...mediaInfo };
-        if (mediaInfo.isCameraPicture) {
-            mediaFileData.mediaFile = await (blobToBuffer(dataURItoBlob(mediaInfo.mediaFromCamera)));
-            mediaFileData.isVideo = false;
-            delete mediaFileData.mediaFromCamera;
-        } else {
-            let file = mediaInfo.selectMedia.item(0);
-            mediaFileData.mediaFile = await blobToBuffer(file);
-            mediaFileData.isCameraPicture = false;
-            mediaFileData.isVideo = isVideo(getExtension(file.name));
-            delete mediaFileData.selectMedia;
-        }
-        console.log(mediaFileData);
+        try {
+            var mediaFileData = { ...mediaInfo };
+            if (mediaInfo.isCameraPicture) {
+                mediaFileData.mediaFile = await (blobToBuffer(dataURItoBlob(mediaInfo.mediaFromCamera)));
+                mediaFileData.isVideo = false;
+                delete mediaFileData.mediaFromCamera;
+            } else {
+                let file = mediaInfo.selectMedia.item(0);
+                mediaFileData.mediaFile = await blobToBuffer(file);
+                mediaFileData.isCameraPicture = false;
+                mediaFileData.isVideo = isVideo(getExtension(file.name));
+                delete mediaFileData.selectMedia;
+            }
 
-        let filesAdded = await ipfs.files
-            .add(Buffer.from(mediaFileData.mediaFile));
-        const file = filesAdded[0];
-        mediaFileData.initHash = getFileUrl + file.hash;
-        const { mediaFile, ...dataToSave } = mediaFileData;
-        const data = Buffer.from(JSON.stringify(dataToSave));
+            let filesAdded = await ipfs.files
+                .add(Buffer.from(mediaFileData.mediaFile));
+            const file = filesAdded[0];
+            mediaFileData.initHash = getFileUrl + file.hash;
+            console.log(file.hash);
+            const { mediaFile, ...dataToSave } = mediaFileData;
+            const data = Buffer.from(JSON.stringify(dataToSave));
 
-        let attributesHash = await ipfs.files.add(data);
-        attrHash = attributesHash[0].hash;
-        console.log(attrHash);
+            let attributesHash = await ipfs.files.add(data);
+            attrHash = attributesHash[0].hash;
+            console.log(attrHash);
 
-        let estimatedGas = await contractInstance.methods
-            .addOwnedMedia(
-                attrHash,
-                mediaFileData.isVideo,
-                mediaFileData.title,
-                mediaFileData.tags
-            )
-            .estimateGas(
+            let estimatedGas = await contractInstance
+                .addOwnedMedia
+                .estimateGas(
+                    attrHash,
+                    mediaFileData.isVideo,
+                    mediaFileData.title,
+                    mediaFileData.tags,
+                    {
+                        from: account
+                    }
+                );
+
+            let receipt = await contractInstance.addOwnedMedia(
                 attrHash,
                 mediaFileData.isVideo,
                 mediaFileData.title,
                 mediaFileData.tags,
                 {
-                    from: account
+                    from: account,
+                    gas: estimatedGas + 100000
                 }
             );
-        let hexHash = web3.toHex(attrHash);
-        console.log(estimatedGas, hexHash);
-        let receipt = await contractInstance.addOwnedMedia(
-            attrHash,
-            mediaFileData.isVideo,
-            mediaFileData.title,
-            mediaFileData.tags,
-            {
-                from: account,
-                gas: estimatedGas + 100000
-            }
-        );
-        let evt = receipt.logs[0].event;
+            let evt = receipt.logs[0].args;
+            
+            // test if media is added successfully
+            let mediaData = await contractInstance.getMediaByMediaHash(evt.mediaHash, {from: account});
+            console.log(mediaData);
+            history.push('/');
 
-        console.log(evt);
-
-        history.push('/');
-
-        dispatch({
-            type: T.PUSH_FILE,
-            payload: { ...mediaInfo }
-        });
+            dispatch({
+                type: T.PUSH_FILE,
+                payload: { ...mediaInfo, ...evt, mediaAdded: true }
+            });
+        } catch (ex) {
+            alert('Error ocurred while adding your file. Please check your info and try again later');
+            console.log(ex);
+            dispatch({
+                type: T.PUSH_FILE,
+                payload: { ...mediaInfo, mediaAdded: false }
+            });
+        }
     }
 }
 
@@ -143,7 +139,7 @@ function getExtension(filename) {
 }
 
 function isVideo(extension) {
-    let allowedExtensions = new RegExp("(.*?)(\.)?(mpg|mpeg|avi|mkv|3gp|mp4|wmv)$", "gi");
+    let allowedExtensions = new RegExp("(.*?)(.)?(mpg|mpeg|avi|mkv|3gp|mp4|wmv)$", "gi");
 
     return allowedExtensions.test(extension);
 }
