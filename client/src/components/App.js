@@ -14,6 +14,8 @@ class App extends Component {
     componentDidMount = async () => {
         // Get network provider and web3 instance.
         await this.props.fetchWeb3();
+        const {contractInstance, web3, account} = this.props;
+        await this.props.getFilesCount(web3, contractInstance, account);
     }
 
     render() {
@@ -29,8 +31,8 @@ class App extends Component {
     }
 }
 
-function mapStateToProps({ initialize }) {
-    return { ...initialize };
+function mapStateToProps({ initialize, filesCount }) {
+    return { ...initialize, ...filesCount };
 }
 
 export default connect(

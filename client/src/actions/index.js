@@ -51,16 +51,14 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
             }
 
             let filesAdded = await ipfs.files
-                .add(Buffer.from(mediaFileData.mediaFile), {onlyHash: true});
+                .add(Buffer.from(mediaFileData.mediaFile), { onlyHash: true });
             const calculatedHash = filesAdded[0].hash;
-            
-            let fileExists = await contractInstance.checkIfExists(calculatedHash, {from: account});
 
-            if(fileExists){
+            let fileExists = await contractInstance.checkIfExists(calculatedHash, { from: account });
+
+            if (fileExists) {
                 let error = "The file you are atempting to add already exists, please add a different one.";
-                alert(error);
-
-                throw(error);
+                throw (error);
             }
 
             let attributesHash = await ipfs.files.add(Buffer.from(mediaFileData.mediaFile));
@@ -90,18 +88,28 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
                 }
             );
             let evt = receipt.logs[0].args;
-            
+
             // test if media is added successfully
-            let mediaData = await contractInstance.getMediaByMediaHash(evt.mediaHash, {from: account});
+            let mediaData = await contractInstance.getMediaByMediaHash(evt.mediaHash, { from: account });
             console.log(mediaData);
             history.push('/');
+
+            window.Swal.fire(
+                'Successful interaction!',
+                `Media File added successfully!!. Here's your proof to retrieve it latter! <br /> <p>${attrHash}</p>`,
+                'success'
+            );
 
             dispatch({
                 type: T.PUSH_FILE,
                 payload: { ...mediaInfo, attrHash, ...evt, mediaAdded: true }
             });
         } catch (ex) {
-            alert('Error ocurred while adding your file. Please check your info and try again later');
+            window.Swal.fire(
+                "Error processing your request!",
+                ex || 'Error ocurred while adding your file. Please check your info and try again later',
+                'error'
+            );
             console.log(ex);
             dispatch({
                 type: T.PUSH_FILE,
@@ -110,6 +118,21 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
         }
     }
 }
+
+export const getFilesCount = (web3, contractInstance, account) => {
+    return async dispatch => {
+        let {totalAddedFiles, currentFilesCount} = await contractInstance.getUserMediaIndex({from: account});
+
+        dispatch({
+            type: T.GET_FILES_COUNT,
+            payload: { totalAddedFiles, currentFilesCount }
+        });
+    };
+}
+
+// Helper funcitons. Should be moved to it's own file and just reference them 
+// from somewhere else. Because all the data handling happens in this file I 
+// decided to keep them here for now. :)
 
 function dataURItoBlob(dataURI) {
     var byteString = atob(dataURI.split(',')[1]);
@@ -144,7 +167,7 @@ function getExtension(filename) {
 }
 
 function isVideo(extension) {
-    let allowedExtensions = new RegExp("(.*?)(.)?(mpg|mpeg|avi|mkv|3gp|mp4|wmv)$", "gi");
+    let allowedExtensions = new RegExp("(.*?)(.)?(mpeg|avi|mkv|3gp|mp4|wmv)$", "gi");
 
     return allowedExtensions.test(extension);
 }

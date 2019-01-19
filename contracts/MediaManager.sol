@@ -229,8 +229,12 @@ contract MediaManager is Ownable, Pausable{
         // Store the reference of the current media file associated with a 
         // key created using the users address and the current index in the map.
         db.setUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex), mediaIndex);
+        db.setUint(getHashIndex("userMediaMapIndex", msg.sender, mediaIndex), userMediaIndex);
+        // map usersmediaindex with mediaindex of the file
         // map owner to the current mediaIndex beign inserted.
         db.setUint(getHashIndex("userMediaMap", msg.sender, mediaIndex), mediaIndex);
+        // update the count of files for the current owner
+        db.setUint(getHashIndex("userMediaCount", msg.sender, "totalFiles"), userMediaIndex == 0 ? 1: userMediaIndex.add(1));
         // Store the index for the next media file to add in the map array.
         db.setUint(
             getHashIndex("userMediaMap", msg.sender, "userMediaIndex"), 
@@ -271,7 +275,7 @@ contract MediaManager is Ownable, Pausable{
 
         // Get saved media index for current caller of the method.
         uint userMediaIndex = db.getUint(
-            getHashIndex("userMediaMap", msg.sender, "userMediaIndex")
+            getHashIndex("userMediaMapIndex", msg.sender, mediaIndex)
         );
 
         // Delete main information aboud the media file
@@ -292,8 +296,14 @@ contract MediaManager is Ownable, Pausable{
         // delete the reference of the current media file associated with a 
         // key created using the users address and the current index in the map.
         db.deleteUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex));
+        // delete current mediaIndex associated with usersMedia array index
+        db.deleteUint(getHashIndex("userMediaMap", msg.sender, mediaIndex));
+        db.deleteUint(getHashIndex("userMediaMapIndex", msg.sender, mediaIndex));
         // Delete current media index with the hash as its key
         db.deleteUint(hashIndex);
+        // update the count of files for the current owner
+        uint currCount = db.getUint(getHashIndex("userMediaCount", msg.sender, "totalFiles"));
+        db.setUint(getHashIndex("userMediaCount", msg.sender, "totalFiles"), currCount.sub(1));
 
         // emit corresponding event
         emit MediaDeleted(mediaHash, mediaIndex, msg.sender);
@@ -363,10 +373,13 @@ contract MediaManager is Ownable, Pausable{
         string memory mediaHash,
         address owner
     ) {
+        // Get the count of files added by the user
+        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
+
+        require(mediaIndex.sub(1) <= userMediaIndex, "Media index not found for this owner.");
         // Get the media index associated form the users's media array
         uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex));
-        // verify the index and check for overflow/underflow.
-        require(_mediaIndex <= mediaIndex.sub(1), "Overflow detected.");
+        // verify the index and check for overflow/underflow.        
 
         // return the associated media file.
         return getMedia(_mediaIndex);
@@ -417,4 +430,10 @@ contract MediaManager is Ownable, Pausable{
         return db.getUint(getHashIndex("lastMediaIndex"));
     }
     
+    function getUserMediaIndex() public view returns (uint totalAddedFiles, uint currentFilesCount) {
+        return (
+            db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex")),
+            db.getUint(getHashIndex("userMediaCount", msg.sender, "totalFiles"))
+        );
+    }
 }

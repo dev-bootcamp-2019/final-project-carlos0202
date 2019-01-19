@@ -6,6 +6,7 @@ import * as mediaReducers from "./mediaReducer";
 // Register all the reducers used in the app here.
 export default combineReducers({
     initialize: rootReducer,
-    media: mediaReducers,
+    media: mediaReducers.addMedia,
+    filesCount: mediaReducers.getFilesCount,
     form: reduxForm
 });

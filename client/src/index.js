@@ -7,7 +7,9 @@ import reduxThunk from 'redux-thunk';
 import App from './components/App';
 import reducers from './reducers';
 import * as serviceWorker from './serviceWorker';
-
+import Swal from 'sweetalert2/dist/sweetalert2.all.js'
+ 
+import 'sweetalert2/dist/sweetalert2.min.css';
 import "./index.css";
 
 const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
@@ -21,3 +23,6 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+// register Sweetalert object globally
+window.Swal = Swal;

@@ -58,7 +58,6 @@ contract("MediaManager", accounts => {
     describe("Media file common operations tests", async () => {
         it("it should add a media file along with its info", async () => {
             // Try adding a new media file
-            console.log(mediaManagerInstance);
             const result = await mediaManagerInstance.addOwnedMedia(
                 mediaFileHash,
                 true,
@@ -71,7 +70,6 @@ contract("MediaManager", accounts => {
             await truffleAssert.eventEmitted(result, 'MediaAdded', (ev) => {
                 mediaIndex = ev.mediaIndex;
                 mediaOwner = ev.mediaOwner;
-                console.log(ev);
                 return ev.mediaIndex == 1 && ev.mediaOwner == accounts[1];
             }, 'MediaAdded event should be emitted with correct parameters');
         });
