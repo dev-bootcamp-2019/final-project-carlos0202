@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 
 import "./Navbar.css";
 import UploadMedia from "./UploadMedia";
+import MyMediaGallery from "./MyMediaGallery";
 
 const NavItem = props => {
     const pageURI = window.location.pathname + window.location.search;
@@ -104,7 +105,7 @@ class Navbar extends Component {
                                 exact
                                 render={() => (
                                     <CardWrapper header="My Media Gallery">
-                                        <h1>My media Gallery</h1>
+                                        <MyMediaGallery />
                                     </CardWrapper>
                                 )}
                             />

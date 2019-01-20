@@ -154,6 +154,12 @@ export const getFilesCount = (web3, contractInstance, account) => {
     };
 }
 
+export const getMediaFromOwner = (web3, contractInstance, account, ) => {
+    return async dispatch => {
+
+    };
+}
+
 // Helper funcitons. Should be moved to it's own file and just reference them 
 // from somewhere else. Because all the data handling happens in this file I 
 // decided to keep them here for now. :)
