@@ -2,15 +2,23 @@ import getWeb3 from '../utils/getWeb3';
 import ipfs, { getFileUrl } from '../utils/getIPFS';
 import * as T from './types';
 import MediaManagerContract from "../contracts/MediaManager.json";
+import {
+    pendingTask, // The action key for modifying loading state
+    begin, // The action value if a "long" running task begun
+    end, // The action value if a "long" running task ended
+  } from 'react-redux-spinner';
 var contract = require("truffle-contract");
 
 export const fetchWeb3 = () => {
     return async dispatch => {
         try {
+            dispatch({
+                type: T.LOADING,
+                [ pendingTask ]: begin
+            });
             const web3 = await getWeb3();
             // Use web3 to get the user's accounts.
             const accounts = await web3.eth.getAccounts();
-
             // Get the contract instance.
             const mediaManager = contract(MediaManagerContract);
             mediaManager.setProvider(web3.currentProvider);
@@ -22,11 +30,15 @@ export const fetchWeb3 = () => {
                 account: accounts[0]
             };
 
-            dispatch({ type: T.FETCH_WEB3, payload: result });
+            dispatch({ 
+                type: T.FETCH_WEB3, 
+                [ pendingTask ]: end,
+                 payload: result });
         } catch (e) {
             console.log(e);
             dispatch({
                 type: T.FETCH_WEB3,
+                [ pendingTask ]: end,
                 payload: { web3: null, accounts: null, contractInstance: null, account: null }
             });
         }
@@ -37,6 +49,10 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
     let attrHash;
     return async dispatch => {
         try {
+            dispatch({
+                type: T.LOADING,
+                [ pendingTask ]: begin
+            });
             var mediaFileData = { ...mediaInfo };
             if (mediaInfo.isCameraPicture) {
                 mediaFileData.mediaFile = await (blobToBuffer(dataURItoBlob(mediaInfo.mediaFromCamera)));
@@ -102,7 +118,8 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
 
             dispatch({
                 type: T.PUSH_FILE,
-                payload: { ...mediaInfo, attrHash, ...evt, mediaAdded: true }
+                [ pendingTask ]: end,
+                payload: { attrHash, ...evt, mediaAdded: true }
             });
         } catch (ex) {
             window.Swal.fire(
@@ -113,6 +130,7 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
             console.log(ex);
             dispatch({
                 type: T.PUSH_FILE,
+                [ pendingTask ]: end,
                 payload: { mediaAdded: false }
             });
         }
@@ -121,10 +139,16 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
 
 export const getFilesCount = (web3, contractInstance, account) => {
     return async dispatch => {
+        dispatch({
+            type: T.LOADING,
+            [ pendingTask ]: begin
+        });
+
         let {totalAddedFiles, currentFilesCount} = await contractInstance.getUserMediaIndex({from: account});
 
         dispatch({
             type: T.GET_FILES_COUNT,
+            [ pendingTask ]: end,
             payload: { totalAddedFiles, currentFilesCount }
         });
     };

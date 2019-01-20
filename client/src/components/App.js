@@ -3,11 +3,13 @@ import MediaManagerContract from "../contracts/MediaManager.json";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "../actions";
+import { Spinner } from "react-redux-spinner";
+import Navbar from "./Navbar.js";
+import Footer from "./Footer.js";
 
 import "../css/font-awesome.min.css";
 import "./App.css";
-import Navbar from "./Navbar.js";
-import Footer from "./Footer.js";
+import 'react-redux-spinner/dist/react-redux-spinner.css';
 
 class App extends Component {
 
@@ -16,6 +18,7 @@ class App extends Component {
         await this.props.fetchWeb3();
         const {contractInstance, web3, account} = this.props;
         await this.props.getFilesCount(web3, contractInstance, account);
+        console.log(this.props);
     }
 
     render() {
@@ -24,6 +27,7 @@ class App extends Component {
         }
         return (
             <div className="App">
+                <Spinner />
                 <Navbar />
                 <Footer />
             </div>
@@ -31,8 +35,8 @@ class App extends Component {
     }
 }
 
-function mapStateToProps({ initialize, filesCount }) {
-    return { ...initialize, ...filesCount };
+function mapStateToProps({ initialize, filesCount, pendingTasks }) {
+    return { ...initialize, ...filesCount, ...pendingTasks };
 }
 
 export default connect(
