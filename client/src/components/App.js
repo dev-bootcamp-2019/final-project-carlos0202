@@ -18,7 +18,6 @@ class App extends Component {
         await this.props.fetchWeb3();
         const {contractInstance, web3, account} = this.props;
         await this.props.getFilesCount(web3, contractInstance, account);
-        console.log(this.props);
     }
 
     render() {

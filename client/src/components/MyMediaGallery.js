@@ -4,34 +4,64 @@ import {
 } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "../actions";
+import { getFileUrl } from "../utils/getIPFS";
+
+import "./MyMediaGallery.css";
 
 export const MediaItem = (props) => {
+    const { title, tags, isVideo, mediaHash, mediaOwner, timestamp, account } = props;
+    console.log(account, mediaOwner);
     return (
-        <div className="media">
-            <img className="mr-3" src="..." alt="Generic placeholder image" />
-            <div className="media-body">
-                <h5 className="mt-0">Media heading</h5>
-                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+        <div className="card owned-media col-md-5">
+            <div className="media-object">
+                {isVideo ?
+                    <video className="media-video mx-auto d-block" controls>
+                        <source src={`${getFileUrl}${mediaHash}`}></source>
+                    </video> :
+                    <img className="media-img mx-auto d-block" src={`${getFileUrl}${mediaHash}`} alt={title + " " + tags} />
+                }
             </div>
+            <div className="media-body">
+                <h5 className="mt-0">{title}</h5>
+                <p>{tags.split(",").map((tag, index) => <span className="badge badge-info mr-2" key={index}>{tag}</span>)}</p>
+                <p>{new Date(timestamp * 1000).toDateString()}</p>
+                <p>{mediaHash}</p>
+            </div>
+            { 
+                account == mediaOwner &&
+                <div className="media-actions">
+                    <button className="btn btn-danger">Delete</button>
+                </div>
+            }
+            
         </div>
     )
 };
 
 class MyMediaGallery extends Component {
     componentDidMount = async () => {
-        console.log(this.props);
+        const { web3, contractInstance, account } = this.props;
+        await this.props.getFilesCount(web3, contractInstance, account);
+        await this.props.getOwnedMedia(contractInstance, account, this.props.totalAddedFiles);
     }
 
-    render(){
+    render() {
+        const { userMedia, mediaFetched, ...extraProps } = this.props;
+
         return (
-            <MediaItem />
+            <div className="row justify-content-center">
+                {
+                    mediaFetched &&
+                    userMedia.map((item, index) => <MediaItem {...item} {...extraProps} key={index} />)
+                }
+            </div>
         )
     }
 }
 
-function mapStateToProps({initialize, filesCount}) {
+function mapStateToProps({ initialize, filesCount, myMedia }) {
 
-    return { ...initialize, ...filesCount };
+    return { ...initialize, ...filesCount, ...myMedia };
 }
 
 export default connect(

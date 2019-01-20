@@ -6,7 +6,7 @@ import {
     pendingTask, // The action key for modifying loading state
     begin, // The action value if a "long" running task begun
     end, // The action value if a "long" running task ended
-  } from 'react-redux-spinner';
+} from 'react-redux-spinner';
 var contract = require("truffle-contract");
 
 export const fetchWeb3 = () => {
@@ -14,7 +14,7 @@ export const fetchWeb3 = () => {
         try {
             dispatch({
                 type: T.LOADING,
-                [ pendingTask ]: begin
+                [pendingTask]: begin
             });
             const web3 = await getWeb3();
             // Use web3 to get the user's accounts.
@@ -30,15 +30,16 @@ export const fetchWeb3 = () => {
                 account: accounts[0]
             };
 
-            dispatch({ 
-                type: T.FETCH_WEB3, 
-                [ pendingTask ]: end,
-                 payload: result });
+            dispatch({
+                type: T.FETCH_WEB3,
+                [pendingTask]: end,
+                payload: result
+            });
         } catch (e) {
             console.log(e);
             dispatch({
                 type: T.FETCH_WEB3,
-                [ pendingTask ]: end,
+                [pendingTask]: end,
                 payload: { web3: null, accounts: null, contractInstance: null, account: null }
             });
         }
@@ -51,7 +52,7 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
         try {
             dispatch({
                 type: T.LOADING,
-                [ pendingTask ]: begin
+                [pendingTask]: begin
             });
             var mediaFileData = { ...mediaInfo };
             if (mediaInfo.isCameraPicture) {
@@ -118,7 +119,7 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
 
             dispatch({
                 type: T.PUSH_FILE,
-                [ pendingTask ]: end,
+                [pendingTask]: end,
                 payload: { attrHash, ...evt, mediaAdded: true }
             });
         } catch (ex) {
@@ -130,7 +131,7 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
             console.log(ex);
             dispatch({
                 type: T.PUSH_FILE,
-                [ pendingTask ]: end,
+                [pendingTask]: end,
                 payload: { mediaAdded: false }
             });
         }
@@ -141,22 +142,48 @@ export const getFilesCount = (web3, contractInstance, account) => {
     return async dispatch => {
         dispatch({
             type: T.LOADING,
-            [ pendingTask ]: begin
+            [pendingTask]: begin
         });
 
-        let {totalAddedFiles, currentFilesCount} = await contractInstance.getUserMediaIndex({from: account});
+        let { totalAddedFiles, currentFilesCount } = await contractInstance.getUserMediaIndex({ from: account });
 
         dispatch({
             type: T.GET_FILES_COUNT,
-            [ pendingTask ]: end,
+            [pendingTask]: end,
             payload: { totalAddedFiles, currentFilesCount }
         });
     };
 }
 
-export const getMediaFromOwner = (web3, contractInstance, account, ) => {
+export const getOwnedMedia = (contractInstance, account, recordsCount) => {
     return async dispatch => {
+        let userMedia = [];
+        let failedAtempts = 0;
+        dispatch({
+            type: T.LOADING,
+            [pendingTask]: begin
+        });
 
+        let from = 1;
+        while (from <= recordsCount) {
+            try {
+                // console.log(from, recordsCount);
+                const { title, tags, isVideo, mediaHash, mediaOwner, timestamp } = 
+                    await contractInstance.getMedia( from, { from: account });
+                userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
+
+            } catch (ex) {
+                console.log(`Failed to retrieve media at user's index ${from}.`);
+                failedAtempts++;
+            }
+            from++;
+        }
+        // console.log(userMedia, from, recordsCount);
+        dispatch({
+            type: T.GET_USER_MEDIA,
+            [pendingTask]: end,
+            payload: { userMedia, failedAtempts, mediaFetched: true }
+        });
     };
 }
 

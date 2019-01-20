@@ -70,8 +70,9 @@ export class WebCamCapture extends React.Component {
     }
     handleClick = () => {
         const screenshot = this.webcam.getScreenshot();
-        this.setState({ screenshot });
-        this.props.input.onChange(screenshot);
+        this.setState({ screenshot }, function(){
+            this.props.input.onChange(screenshot);
+        });
     }
     render() {
         const { input, meta: { error, touched }, ...props } = this.props;
@@ -140,14 +141,16 @@ export class TagInput extends React.Component {
         const { tags } = this.state;
         this.setState({
             tags: tags.filter((tag, index) => index !== i),
+        }, function(){
+            this.props.input.onChange(this.getTags());
         });
-        console.log(this.getTags());
-        this.props.input.onChange(this.getTags());
     }
 
     handleAddition(tag) {
-        this.setState(state => ({ tags: [...state.tags, tag] }));
-        this.props.input.onChange(this.getTags());
+        const tags = [...this.state.tags, tag];
+        this.setState({ tags }, function(){
+            this.props.input.onChange(this.getTags());
+        });        
     }
 
     getTags(){

@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import {
-    BrowserRouter as Router,
-    Route,
-    Link,
-    Switch, withRouter
+    withRouter
 } from "react-router-dom";
 import { connect } from "react-redux";
 import { 
@@ -69,7 +66,7 @@ let validations = {
     selectMedia: [
         required({ if: (values, value) => { return !values.isCameraPicture }, message: rf }), 
         file({
-            accept: 'image/*, video/mpeg, video/avi, video/mkv, video/3gp, video/mp4, video/wmv',
+            accept: 'image/*, video/mp4, video/avi, video/flv',
             maxSize: '30 MB', // max file upload set to 30 MB
             maxFiles: 1
         })

@@ -230,9 +230,7 @@ contract MediaManager is Ownable, Pausable{
         // key created using the users address and the current index in the map.
         db.setUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex), mediaIndex);
         db.setUint(getHashIndex("userMediaMapIndex", msg.sender, mediaIndex), userMediaIndex);
-        // map usersmediaindex with mediaindex of the file
-        // map owner to the current mediaIndex beign inserted.
-        db.setUint(getHashIndex("userMediaMap", msg.sender, mediaIndex), mediaIndex);
+
         // update the count of files for the current owner
         db.setUint(getHashIndex("userMediaCount", msg.sender, "totalFiles"), userMediaIndex == 0 ? 1: userMediaIndex.add(1));
         // Store the index for the next media file to add in the map array.
@@ -250,7 +248,7 @@ contract MediaManager is Ownable, Pausable{
         // emit corresponding event
         emit MediaAdded(mediaHash, mediaIndex, msg.sender);
 
-        return mediaIndex;
+        return (mediaIndex);
     }
 
     /** @dev Deletes an IPFS file hash and its extra data of the contract's storage.
@@ -297,7 +295,6 @@ contract MediaManager is Ownable, Pausable{
         // key created using the users address and the current index in the map.
         db.deleteUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex));
         // delete current mediaIndex associated with usersMedia array index
-        db.deleteUint(getHashIndex("userMediaMap", msg.sender, mediaIndex));
         db.deleteUint(getHashIndex("userMediaMapIndex", msg.sender, mediaIndex));
         // Delete current media index with the hash as its key
         db.deleteUint(hashIndex);
@@ -334,8 +331,7 @@ contract MediaManager is Ownable, Pausable{
         // Get the owner address of the media
         mediaOwner = db.getAddress(getHashIndex("mediaMap", mediaIndex, "mediaOwner"));
         require(
-            mediaOwner != address(0) && 
-            db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex)) == mediaIndex,
+            mediaOwner != address(0),
             "Media file not found or it's not assigned to the right owner."
         );
         // Get information aboud the media file added
@@ -356,8 +352,7 @@ contract MediaManager is Ownable, Pausable{
 
     /** @dev Returns all the information stored about a media file given a media owner and 
     * the index of the media file in user's media array.
-    * @param mediaOwner Address of the media owner.
-    * @param mediaIndex - Index of saved media file in user's media array.
+    * @param userMediaIndex - Index of saved media file in user's media array.
     * @return the media file is a video (isVideo).
     * @return associated title of the media file (title).
     * @return associated tags of the media file.
@@ -365,20 +360,20 @@ contract MediaManager is Ownable, Pausable{
     * @return the media file hash obtained fro IPFS.
     * @return the address of the owner of this media file.
     */
-    function getUserMedia(address mediaOwner, uint mediaIndex) public view returns (
+    function getUserMedia(uint userMediaIndex) public view returns (
         bool isVideo,
         string memory title,
         string memory tags,
         uint timestamp,
         string memory mediaHash,
-        address owner
+        address mediaOwner
     ) {
         // Get the count of files added by the user
-        uint userMediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
+        uint userAddedCount = db.getUint(getHashIndex("userMediaMap", msg.sender, "userMediaIndex"));
 
-        require(mediaIndex.sub(1) <= userMediaIndex, "Media index not found for this owner.");
+        require(userMediaIndex.sub(1) <= userAddedCount, "Media index not found for this owner.");
         // Get the media index associated form the users's media array
-        uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", mediaOwner, mediaIndex));
+        uint _mediaIndex = db.getUint(getHashIndex("userMediaMap", msg.sender, userMediaIndex));
         // verify the index and check for overflow/underflow.        
 
         // return the associated media file.
