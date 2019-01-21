@@ -7647,6 +7647,12 @@
     "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
   },
   "networks": {
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0xE76cFb944e54639890C6Df7225f44FfF698506CF",
+      "transactionHash": "0x6fff9a8bd9d058839273a077f5aa891bc46ec9b51865e31a2a18db75d1c02680"
+    },
     "5777": {
       "events": {
         "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
@@ -7674,7 +7680,7 @@
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-20T16:03:53.758Z",
+  "updatedAt": "2019-01-21T20:02:12.629Z",
   "devdoc": {
     "details": "An ownable contract that can be used as a storage where the variables\r are stored in a set of mappings indexed by hash names.\r Contract importing following the guidelines in the zeppelinos upgreadability\r contracts post: \r https://github.com/zeppelinos/labs/tree/ff479995ed90c4dbb5e32294fa95b16a22bb99c8/upgradeability_using_eternal_storage\r \r",
     "methods": {

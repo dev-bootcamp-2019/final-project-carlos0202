@@ -43,7 +43,7 @@ contract MediaManager is Ownable, Pausable{
         // from EternalStorage.
         // Store index of last added media. 
         // (set at 0 because no media exists when first instantiated)
-        db.setUint(getHashIndex("lastMediaIndex"), 0);
+        // db.setUint(getHashIndex("lastMediaIndex"), 0);
     }
 
     /** @dev Fallback to reject any ether sent to contract
