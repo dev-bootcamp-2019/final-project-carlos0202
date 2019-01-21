@@ -7,6 +7,6 @@ const currentConfig = { host: "ipfs.infura.io",  port: '5001', readOnlyport: '80
 
 const ipfs = new IPFS(currentConfig);
 
-export const getFileUrl = `${currentConfig.protocol}://${currentConfig.host}:${currentConfig.readOnlyport}/ipfs/`;
+export const getFileUrl = `https://ipfs.io/ipfs/`;
 
 export default ipfs;
