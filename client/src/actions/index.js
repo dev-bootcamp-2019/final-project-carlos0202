@@ -210,6 +210,49 @@ export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCo
     };
 }
 
+export const getMediaByHash = (hash, contractInstance, account) => {
+    return async dispatch => {
+        dispatch({
+            type: T.LOADING,
+            [pendingTask]: begin
+        });
+        try {
+
+            if(hash == null){
+                dispatch({
+                    type: T.FETCH_MEDIA,
+                    [pendingTask]: end,
+                    payload: null
+                });
+
+                return;
+            }
+
+            const { title, tags, isVideo, mediaHash, mediaOwner, timestamp } =
+                await contractInstance.getMediaByMediaHash(hash, { from: account });
+
+            dispatch({
+                type: T.FETCH_MEDIA,
+                [pendingTask]: end,
+                payload: { title, tags, isVideo, mediaHash, mediaOwner, timestamp }
+            });
+        } catch (ex) {
+            console.log(ex);
+            window.Swal.fire(
+                "Error processing your request!",
+                'Error ocurred while obtaining requested file. Please check your info and try again later',
+                'error'
+            );
+
+            dispatch({
+                type: T.FETCH_MEDIA,
+                [pendingTask]: end,
+                payload: null
+            });
+        }
+    };
+};
+
 // Helper funcitons. Should be moved to it's own file and just reference them 
 // from somewhere else. Because all the data handling happens in this file I 
 // decided to keep them here for now. :)

@@ -10,6 +10,15 @@ export function addMedia(state = {}, action) {
     }
 }
 
+export function getMediaByHash(state = null, action){
+    switch(action.type){
+        case T.FETCH_MEDIA:
+            return action.payload;
+        default:
+            return state;
+    }
+}
+
 export function getFilesCount(state = {totalAddedFiles: 0, currentFilesCount: 0}, action) {
     switch(action.type){
         case T.GET_FILES_COUNT:

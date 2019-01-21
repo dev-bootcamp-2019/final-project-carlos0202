@@ -11,5 +11,6 @@ export default combineReducers({
     filesCount: mediaReducers.getFilesCount,
     pendingTasks: pendingTasksReducer,
     myMedia: mediaReducers.getOwnedMedia,
+    searchedMedia: mediaReducers.getMediaByHash,
     form: reduxForm
 });

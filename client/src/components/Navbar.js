@@ -10,6 +10,7 @@ import { connect } from "react-redux";
 import "./Navbar.css";
 import UploadMedia from "./UploadMedia";
 import MyMediaGallery from "./MyMediaGallery";
+import SearchMedia from "./SearchMedia";
 
 const NavItem = props => {
     const pageURI = window.location.pathname + window.location.search;
@@ -63,7 +64,7 @@ class Navbar extends Component {
                                     <NavItem to="/" name="Home" />
                                     <NavItem to="/upload-media" name="Upload" />
                                     <NavItem to="/media-gallery" name="Gallery" />
-                                    <NavItem to="/verify-media" name="Verify" />
+                                    <NavItem to="/search-media" name="Search" />
 
                                 </ul>
                                 <ul className="navbar-nav justify-content-end">
@@ -73,10 +74,6 @@ class Navbar extends Component {
                                                 data-content={this.props.account}><i className="fa fa-eye"></i></span></span>
                                     </NavItem>
                                 </ul>
-                                <form className="form-inline my-2 my-lg-0">
-                                    <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" />
-                                    <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                                </form>
                             </div>
                         </nav>
                     </header>
@@ -110,11 +107,11 @@ class Navbar extends Component {
                                 )}
                             />
                             <Route
-                                path="/verify-media"
+                                path="/search-media/:mediaHash?"
                                 exact
                                 render={() => (
-                                    <CardWrapper header="Verify Uploaded Media">
-                                        <h1>Verify Uploaded Media</h1>
+                                    <CardWrapper header="Search Uploaded Media">
+                                        <SearchMedia />
                                     </CardWrapper>
                                 )}
                             />
