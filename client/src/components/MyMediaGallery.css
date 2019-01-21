@@ -24,3 +24,8 @@ div.media-body {
     height: auto;
     word-wrap: break-word;
 }
+
+div.search-container > div.owned-media {
+    margin-top: 0;
+    margin-left: 0;
+}

@@ -70,8 +70,9 @@ class Navbar extends Component {
                                 <ul className="navbar-nav justify-content-end">
                                     <NavItem className="nav-right">
                                         <span>
-                                            Logged as: <span className="pop" data-toggle="popover" title="Logged User Address"
-                                                data-content={this.props.account}><i className="fa fa-eye"></i></span></span>
+                                            Logged as: <a className="pop" data-toggle="popover" title="Logged User Address"
+                                                tabIndex="0" data-trigger="focus" data-container="body" data-placement="bottom"
+                                                data-content={this.props.account}><i className="fa fa-eye"></i></a></span>
                                     </NavItem>
                                 </ul>
                             </div>

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import {
+    Link,
     withRouter
 } from "react-router-dom";
 import { connect } from "react-redux";
@@ -32,9 +33,9 @@ export const MediaItem = (props) => {
             );
         }
     }
-
+    const path = props.location.pathname;
     return (
-        <div className={`card owned-media col-md-${colSpan}`}>
+        <div className={`card owned-media col-lg-${colSpan}`}>
             <div className="media-object">
                 {isVideo ?
                     <video className="media-video mx-auto d-block" controls>
@@ -58,14 +59,22 @@ export const MediaItem = (props) => {
             <div className="card-footer">
                 {
                     account === mediaOwner ?
-                        <div className="media-actions">
-                            <button className="btn btn-danger" onClick={() => handleDelete(mediaHash, props)}>Delete</button>
+                        <div className="btn-toolbar">
+                            <div className="media-actions">
+                                <button className="btn btn-danger" onClick={() => handleDelete(mediaHash, props)}>Delete</button>
+                            </div>
+                            {
+                                !path.startsWith("/search-media") &&
+                                <Link to={`/search-media/${mediaHash}`} className="btn btn-info ml-1" >
+                                    View Full
+                                </Link>
+                            }
                         </div> :
                         <p><span className="text-muted">Owner: </span>{mediaOwner}</p>
                 }
             </div>
         </div>
-    )
+    );
 };
 
 class MyMediaGallery extends Component {

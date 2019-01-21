@@ -52,9 +52,9 @@ class SearchMedia extends Component {
                     </div>
                 </div>
 
-                <div className="row justify-content-center">
+                <div className="col-12 justify-content-center search-container">
                     {(searchedMedia != null) ?
-                        <MediaItem {...this.props} {...searchedMedia} colSpan={11} /> :
+                        <MediaItem {...this.props} {...searchedMedia} colSpan={12} /> :
                         <div className="col-12">
                             {(params && params.mediaHash) ?
                                 <p>
