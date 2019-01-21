@@ -33,10 +33,29 @@ const NavItem = props => {
 const CardWrapper = props => {
     return (
         <div className="card" id="AppBody">
-            <div className="card-header"><h3>{props.header}</h3></div>
-            <div className="card-body">
+            <div className={`card-header ${props.headerClasses} `}><h3>{props.header}</h3></div>
+            <div className={`card-body ${props.bodyClasses}`}>
                 {props.children}
             </div>
+        </div>
+    );
+}
+
+const Home = (props) => {
+    return (
+        <div className="jumbotron">
+            <h1 className="display-4">Hello, Dear User!</h1>
+            <p className="lead">
+                This is the <strong>My Media Collection DApp</strong>. We provide services to allow our users to upload media that belongs to them,
+                so that they could later share a proof of these files with others. Searching in our site using the proof token
+                provided by the owners We display the data related to that proof, including the date added.
+            </p>
+            <hr className="my-4" />
+            <p>You are currently logged in using the wallet address: <strong>{props.account}</strong>.</p>
+            <p>All your transactions will be signed using this address as your identifier of ownership.</p>
+            <hr className="my-4" />
+            <p>Please enyoy our services built upon the Ethereum network. Use the button bellow to start uploading your content.</p>
+            <Link className="btn btn-primary btn-lg" to="/upload-media" role="button">Upload Files</Link>
         </div>
     );
 }
@@ -84,8 +103,8 @@ class Navbar extends Component {
                                 path="/"
                                 exact
                                 render={() => (
-                                    <CardWrapper header="Home">
-                                        <h1>Home</h1>
+                                    <CardWrapper header="My Media Collection DApp" headerClasses="text-center">
+                                        <Home account={this.props.account} />
                                     </CardWrapper>
                                 )}
                             />
