@@ -75,7 +75,7 @@ export class WebCamCapture extends React.Component {
         });
     }
     render() {
-        const { input, meta: { error, touched }, ...props } = this.props;
+        const { meta: { error, touched } } = this.props;
 
         return (
             <div>
@@ -99,7 +99,7 @@ export class WebCamCapture extends React.Component {
                 <div className="form-group">
                     <h4>Captured Media:</h4>
                     <div className="embed-responsive">
-                        {this.state.screenshot ? <img className="img-fluid" src={this.state.screenshot} /> : null}
+                        {this.state.screenshot ? <img className="img-fluid" src={this.state.screenshot} alt="taken foto" /> : null}
                     </div>
 
                 </div>

@@ -69,8 +69,8 @@ class Navbar extends Component {
                                 <ul className="navbar-nav justify-content-end">
                                     <NavItem className="nav-right">
                                         <span>
-                                            Logged as: <a className="pop" data-toggle="popover" title="Logged User Address"
-                                                data-content={this.props.account}><i className="fa fa-eye"></i></a></span>
+                                            Logged as: <span className="pop" data-toggle="popover" title="Logged User Address"
+                                                data-content={this.props.account}><i className="fa fa-eye"></i></span></span>
                                     </NavItem>
                                 </ul>
                                 <form className="form-inline my-2 my-lg-0">
@@ -80,7 +80,7 @@ class Navbar extends Component {
                             </div>
                         </nav>
                     </header>
-                    <main role="main" className="container">
+                    <main role="main" className="container-fluid">
                         <Switch>
                             <Route
                                 path="/"

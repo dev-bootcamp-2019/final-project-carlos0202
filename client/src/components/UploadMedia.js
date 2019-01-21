@@ -12,7 +12,7 @@ import {
     TagInput 
 } from "./shared/Input";
 import { reduxForm, Field, formValueSelector } from "redux-form";
-import { required, file, Va } from 'redux-form-validators'
+import { required, file } from 'redux-form-validators'
 import * as actions from "../actions";
 
 import "./shared/react-tag-input.css";
@@ -85,15 +85,6 @@ function validate(values) {
 
     return errors;
 }
-
-const checkRequired = (values, errors, name, label) => {
-    if (!values[name]) {
-        errors[name] = `${label} field must have a value`;
-    }
-
-    return errors;
-}
-
 
 UploadMedia = reduxForm({
     validate,

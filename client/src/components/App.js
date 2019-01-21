@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import MediaManagerContract from "../contracts/MediaManager.json";
-import { BrowserRouter as Router, Route } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 import { Spinner } from "react-redux-spinner";

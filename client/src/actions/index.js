@@ -1,5 +1,5 @@
 import getWeb3 from '../utils/getWeb3';
-import ipfs, { getFileUrl } from '../utils/getIPFS';
+import ipfs from '../utils/getIPFS';
 import * as T from './types';
 import MediaManagerContract from "../contracts/MediaManager.json";
 import {
@@ -105,10 +105,7 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
                 }
             );
             let evt = receipt.logs[0].args;
-
-            // test if media is added successfully
-            let mediaData = await contractInstance.getMediaByMediaHash(evt.mediaHash, { from: account });
-            console.log(mediaData);
+            console.log(evt);
             history.push('/');
 
             window.Swal.fire(
@@ -157,39 +154,86 @@ export const getFilesCount = (web3, contractInstance, account) => {
 
 export const getOwnedMedia = (contractInstance, account, recordsCount) => {
     return async dispatch => {
-        let userMedia = [];
-        let failedAtempts = 0;
         dispatch({
             type: T.LOADING,
             [pendingTask]: begin
         });
 
-        let from = 1;
-        while (from <= recordsCount) {
-            try {
-                // console.log(from, recordsCount);
-                const { title, tags, isVideo, mediaHash, mediaOwner, timestamp } = 
-                    await contractInstance.getMedia( from, { from: account });
-                userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
-
-            } catch (ex) {
-                console.log(`Failed to retrieve media at user's index ${from}.`);
-                failedAtempts++;
-            }
-            from++;
-        }
+        let payload = await getMedia(contractInstance, account, recordsCount);
         // console.log(userMedia, from, recordsCount);
         dispatch({
             type: T.GET_USER_MEDIA,
             [pendingTask]: end,
-            payload: { userMedia, failedAtempts, mediaFetched: true }
+            payload: payload
         });
+    };
+}
+
+export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCount) => {
+    return async dispatch => {
+        dispatch({
+            type: T.LOADING,
+            [pendingTask]: begin
+        });
+        try {
+            let estimatedGas = await contractInstance.deleteOwnedMedia
+                .estimateGas(mediaHash, { from: account });
+            let receipt = await contractInstance
+                .deleteOwnedMedia(mediaHash, { from: account, gas: estimatedGas + 100000 });
+            let evt = receipt.logs[0].args;
+            console.log([receipt, evt]);
+            let { totalAddedFiles } = await contractInstance.getUserMediaIndex({ from: account });
+            let payload = await getMedia(contractInstance, account, totalAddedFiles);
+
+            window.Swal.fire(
+                'Successful interaction!',
+                `Media File deleted successfully!!!`,
+                'success'
+            );
+
+            dispatch({
+                type: T.GET_USER_MEDIA,
+                [pendingTask]: end,
+                payload: payload
+            });
+        } catch (ex) {
+            console.log(ex);
+            window.Swal.fire(
+                "Error processing your request!",
+                ex || 'Error ocurred while deleting your file. Please check your info and try again later',
+                'error'
+            );
+
+            return getOwnedMedia(contractInstance, account, recordsCount);
+        }
+
     };
 }
 
 // Helper funcitons. Should be moved to it's own file and just reference them 
 // from somewhere else. Because all the data handling happens in this file I 
 // decided to keep them here for now. :)
+
+async function getMedia(contractInstance, account, recordsCount) {
+    let userMedia = [];
+    let failedAtempts = 0;
+    let from = 1;
+    while (from <= recordsCount) {
+        try {
+            // console.log(from, recordsCount);
+            const { title, tags, isVideo, mediaHash, mediaOwner, timestamp } =
+                await contractInstance.getMedia(from, { from: account });
+            userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
+
+        } catch (ex) {
+            console.log(`Failed to retrieve media at user's index ${from}.`);
+            failedAtempts++;
+        }
+        from++;
+    }
+
+    return { userMedia, failedAtempts, mediaFetched: true };
+}
 
 function dataURItoBlob(dataURI) {
     var byteString = atob(dataURI.split(',')[1]);
