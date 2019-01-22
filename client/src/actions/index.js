@@ -120,9 +120,10 @@ export const addMedia = (mediaInfo, contractInstance, account, web3, history) =>
                 payload: { attrHash, ...evt, mediaAdded: true }
             });
         } catch (ex) {
+            console.log(ex);
             window.Swal.fire(
                 "Error processing your request!",
-                ex || 'Error ocurred while adding your file. Please check your info and try again later',
+                'Error ocurred while adding your file. Please check your info and try again later',
                 'error'
             );
             console.log(ex);
@@ -220,7 +221,7 @@ export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCo
             console.log(ex);
             window.Swal.fire(
                 "Error processing your request!",
-                ex || 'Error ocurred while deleting your file. Please check your info and try again later',
+                'Error ocurred while deleting your file. Please check your info and try again later',
                 'error'
             );
 
