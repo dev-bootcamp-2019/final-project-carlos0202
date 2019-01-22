@@ -169,7 +169,7 @@ export const getOwnedMedia = (contractInstance, account, recordsCount) => {
     };
 }
 
-export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCount) => {
+export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCount, caller) => {
     return async dispatch => {
         dispatch({
             type: T.LOADING,
@@ -183,13 +183,24 @@ export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCo
             let evt = receipt.logs[0].args;
             console.log([receipt, evt]);
             let { totalAddedFiles } = await contractInstance.getUserMediaIndex({ from: account });
-            let payload = await getMedia(contractInstance, account, totalAddedFiles);
 
             window.Swal.fire(
                 'Successful interaction!',
                 `Media File deleted successfully!!!`,
                 'success'
             );
+
+            if(caller === "SEARCH"){
+                dispatch({
+                    type: T.FETCH_MEDIA,
+                    [pendingTask]: end,
+                    payload: null
+                });
+
+                return;
+            }
+
+            let payload = await getMedia(contractInstance, account, totalAddedFiles);            
 
             dispatch({
                 type: T.GET_USER_MEDIA,

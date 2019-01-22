@@ -12,7 +12,7 @@ import "./MyMediaGallery.css";
 export const MediaItem = (props) => {
     const { title, tags, isVideo, mediaHash, mediaOwner, timestamp, account, colSpan } = props;
 
-    async function handleDelete(mediaHash, props) {
+    async function handleDelete(mediaHash, props, isSearch) {
         let result = await window.Swal.fire({
             title: 'Are you sure?',
             text: "Are you sure to delete this media file? This action can't be undone!",
@@ -24,7 +24,8 @@ export const MediaItem = (props) => {
         });
         if (result.value) {
             const { contractInstance, account, totalAddedFiles } = props;
-            await props.deleteOwnedMedia(contractInstance, account, mediaHash, totalAddedFiles);
+            const caller = isSearch ? "SEARCH": "GALLERY";
+            await props.deleteOwnedMedia(contractInstance, account, mediaHash, totalAddedFiles, caller);
         } else {
             window.Swal.fire(
                 'Operation Cancelled!',
@@ -61,7 +62,7 @@ export const MediaItem = (props) => {
                     account === mediaOwner ?
                         <div className="btn-toolbar">
                             <div className="media-actions">
-                                <button className="btn btn-danger" onClick={() => handleDelete(mediaHash, props)}>Delete</button>
+                                <button className="btn btn-danger" onClick={() => handleDelete(mediaHash, props, path.startsWith("/search-media"))}>Delete</button>
                             </div>
                             {
                                 !path.startsWith("/search-media") &&
