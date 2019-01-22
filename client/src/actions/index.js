@@ -291,7 +291,6 @@ async function getMedia(contractInstance, account, recordsCount) {
             if (mediaOwner == account)
                 userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
         } catch (ex) {
-            console.log(`Failed to retrieve media at user's index ${from}.`);
             failedAtempts++;
         }
         from++;
