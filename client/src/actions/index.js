@@ -281,7 +281,7 @@ export const getMediaByHash = (hash, contractInstance, account) => {
 async function getMedia(contractInstance, account, recordsCount) {
     let userMedia = [];
     let failedAtempts = 0;
-    let from = 1;
+    let from = 0;
     while (from <= recordsCount) {
         try {
             // console.log(from, recordsCount);
