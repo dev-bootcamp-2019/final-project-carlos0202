@@ -281,14 +281,15 @@ export const getMediaByHash = (hash, contractInstance, account) => {
 async function getMedia(contractInstance, account, recordsCount) {
     let userMedia = [];
     let failedAtempts = 0;
-    let from = 0;
-    while (from <= recordsCount) {
+    let from = 1;
+    let max = await contractInstance.lastMediaIndex({ from: account });
+    while (from <= max) {
         try {
             // console.log(from, recordsCount);
             const { title, tags, isVideo, mediaHash, mediaOwner, timestamp } =
-                await contractInstance.getUserMedia(from, { from: account });
-            userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
-
+                await contractInstance.getMedia(from, { from: account });
+            if (mediaOwner == account)
+                userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
         } catch (ex) {
             console.log(`Failed to retrieve media at user's index ${from}.`);
             failedAtempts++;
