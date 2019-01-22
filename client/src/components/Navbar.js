@@ -82,7 +82,7 @@ class Navbar extends Component {
                                 <ul className="navbar-nav mr-auto">
                                     <NavItem to="/" name="Home" />
                                     <NavItem to="/upload-media" name="Upload" />
-                                    <NavItem to="/media-gallery" name="Gallery" />
+                                    <NavItem to="/media-gallery" name="My Gallery" />
                                     <NavItem to="/search-media" name="Search" />
 
                                 </ul>

@@ -285,7 +285,7 @@ async function getMedia(contractInstance, account, recordsCount) {
         try {
             // console.log(from, recordsCount);
             const { title, tags, isVideo, mediaHash, mediaOwner, timestamp } =
-                await contractInstance.getMedia(from, { from: account });
+                await contractInstance.getUserMedia(from, { from: account });
             userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
 
         } catch (ex) {
