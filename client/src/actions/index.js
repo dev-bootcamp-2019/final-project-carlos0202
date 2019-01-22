@@ -175,6 +175,7 @@ export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCo
             type: T.LOADING,
             [pendingTask]: begin
         });
+        console.log(caller);
         try {
             let estimatedGas = await contractInstance.deleteOwnedMedia
                 .estimateGas(mediaHash, { from: account });
@@ -184,13 +185,21 @@ export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCo
             console.log([receipt, evt]);
             let { totalAddedFiles } = await contractInstance.getUserMediaIndex({ from: account });
 
-            window.Swal.fire(
-                'Successful interaction!',
-                `Media File deleted successfully!!!`,
-                'success'
-            );
+            if (receipt.logs[0].event === "MediaDeleted") {
+                window.Swal.fire(
+                    'Successful interaction!',
+                    `Media File deleted successfully!!!`,
+                    'success'
+                );
+            } else {
+                window.Swal.fire(
+                    'Wrong interaction!',
+                    `Media File deletion was not successful. Please check your data and try again later!!!`,
+                    'warning'
+                );
+            }
 
-            if(caller === "SEARCH"){
+            if (caller === "SEARCH") {
                 dispatch({
                     type: T.FETCH_MEDIA,
                     [pendingTask]: end,
@@ -200,7 +209,7 @@ export const deleteOwnedMedia = (contractInstance, account, mediaHash, recordsCo
                 return;
             }
 
-            let payload = await getMedia(contractInstance, account, totalAddedFiles);            
+            let payload = await getMedia(contractInstance, account, totalAddedFiles);
 
             dispatch({
                 type: T.GET_USER_MEDIA,
@@ -229,7 +238,7 @@ export const getMediaByHash = (hash, contractInstance, account) => {
         });
         try {
 
-            if(hash == null){
+            if (hash == null) {
                 dispatch({
                     type: T.FETCH_MEDIA,
                     [pendingTask]: end,
