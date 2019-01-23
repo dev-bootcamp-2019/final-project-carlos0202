@@ -116,6 +116,6 @@ npm run dev
 
 After starting the application, you can point your browser to http://localhost:3000 and start interacting with it. Remember to keep open Ganache CLI and login in Metamask extension to be able to see the application in action.
 
-There is also a production deployed version of this DApp hosted on Heroku that anyone with a wallet can use visiting the following URL:
+There is also a production deployed version of this DApp hosted on Heroku that anyone with a wallet and some ether in the rinkeby network can use visiting the following URL:
 
 http://consensys-pf-poe-cagc.herokuapp.com/
