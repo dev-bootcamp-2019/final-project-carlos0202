@@ -283,20 +283,32 @@ async function getMedia(contractInstance, account, recordsCount) {
     let failedAtempts = 0;
     let from = 1;
     let max = await contractInstance.lastMediaIndex({ from: account });
+    let { currentFilesCount } = await contractInstance.getUserMediaIndex({ from: account });
+    let fetchedFiles = 0;
+    let allFetched = false;
+
     while (from <= max) {
         try {
             // console.log(from, recordsCount);
             const { title, tags, isVideo, mediaHash, mediaOwner, timestamp } =
                 await contractInstance.getMedia(from, { from: account });
-            if (mediaOwner == account)
-                userMedia.push({ index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() });
+            if (mediaOwner == account){
+                userMedia.push(
+                    { index: from, title, tags, isVideo, mediaHash, mediaOwner, timestamp: timestamp.toNumber() }
+                );
+                fetchedFiles++;
+                if(fetchedFiles === currentFilesCount){
+                    allFetched = true;
+                    break;
+                }
+            }
         } catch (ex) {
             failedAtempts++;
         }
         from++;
     }
 
-    return { userMedia, failedAtempts, mediaFetched: true };
+    return { userMedia, failedAtempts, mediaFetched: true, allFetched };
 }
 
 function dataURItoBlob(dataURI) {

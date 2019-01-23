@@ -42,7 +42,7 @@ export const MediaItem = (props) => {
                     <video className="media-video mx-auto d-block" controls>
                         <source src={`${getFileUrl}${mediaHash}`}></source>
                     </video> :
-                    <img className="media-img mx-auto d-block" src={`${getFileUrl}${mediaHash}`} alt={title + " " + tags} />
+                    <img className="media-img mx-auto d-block loading" src={`${getFileUrl}${mediaHash}`} alt={title + " " + tags} />
                 }
             </div>
             <div className="media-body">
@@ -94,6 +94,7 @@ class MyMediaGallery extends Component {
                     mediaFetched &&
                     userMedia.map((item, index) => <MediaItem {...item} {...extraProps} key={index} colSpan={5} />)
                 }
+                {(mediaFetched && !userMedia.length) && <p>You have not added any new file yet. Try uploading content and try again.</p>}
             </div>
         )
     }

@@ -27,6 +27,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start": "serve -s build",
+    "dev": "react-scripts start",
     "heroku-postbuild": "npm run build"
   },
   "eslintConfig": {
