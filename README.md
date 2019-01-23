@@ -92,7 +92,7 @@ Install the project dependencies:
 npm install	
 ```
 
-Compile the contracts, deploy and migrate using Truffle. The project is already pointing to ganache cli default port:
+Compile the contracts, deploy and migrate using Truffle. The project is already pointing to ganache cli default port, but remember to point to the right network using the **--network** flag because the config file points to the localhost and rinkeby networks (rinkeby link is my current testnet link):
 ```
 truffle compile
 truffle migrate
