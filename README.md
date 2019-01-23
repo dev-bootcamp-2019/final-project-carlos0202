@@ -1,4 +1,4 @@
-# About My Media Collection Dapp
+# About My Media Collection DApp
 
 My media collection is a proof of existence project based on the Ethereum blockchain, it is my final project for the Consensys academy Ethereum developer bootcamp.
 
@@ -44,7 +44,7 @@ This  is the page where users can search for a specific media proof using the **
 This Consensys final grade project has been possible thanks to the next tools and platforms:
 
 ## Backend
-  *	Solidity and the Ethereum VM (EVM)
+  *	[Solidity v0.5.0](https://solidity.readthedocs.io/en/v0.5.0/) and the Ethereum VM (EVM)
   *	OpenZepellin battle-tested framework
   *	IPFS and Infura public IPFS nodes
   *	Truffle
@@ -103,13 +103,9 @@ Now the DApp's contracts are completely installed in your machine and deployed. 
 truffle test
 ```
 
-To run the development server you must first change the current directory to the client directory:
+To run the development server you must first change the current directory to the client directory and install all the frontend npm package dependencies to be avaiable to run the react app and start interacting with the deployed contract using the following commands:
 ```
 cd client	
-```
-
-Then, you need to install all the frontend project dependencies using the following command:
-```
 npm install	
 ```
 
