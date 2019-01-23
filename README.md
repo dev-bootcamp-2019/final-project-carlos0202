@@ -27,14 +27,14 @@ Description
 Page to search for a specific media proof. On the search bar you can paste a proof hash to look for a content.
 Used tools
 
-![ethereum]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/ethereum.png?raw=true "ethereum")
-![metamask]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/metamask.png?raw=true "metamask")
-![ipfs]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/ipfs.png?raw=true "ipfs")
-![infura]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/infura.png?raw=true "infura")
-![truffle]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/truffle.png?raw=true "truffle")
-![react]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/react.png?raw=true "react")
-![redux]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/redux.png?raw=true "redux")
-![bootstrap]( https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/bootstrap.jpg?raw=true "bootstrap")
+![ethereum](../assets/ethereum.png?raw=true "ethereum")
+![metamask](https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/metamask.png?raw=true "metamask")
+![ipfs](https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/ipfs.png?raw=true "ipfs")
+![infura](https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/infura.png?raw=true "infura")
+![truffle](https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/truffle.png?raw=true "truffle")
+![react](https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/react.png?raw=true "react")
+![redux](https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/redux.png?raw=true "redux")
+![bootstrap](https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa/tree/master/assets/bootstrap.jpg?raw=true "bootstrap")
 
 This Consensys final grade project has been possible thanks to the next tools and platforms:
 Backend
