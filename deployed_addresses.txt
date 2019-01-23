@@ -1,0 +1,152 @@
+The deployed addresses of the Storage contract and the main contract on the rinkeby testnet are the following:
+
+  * MediaManager.sol (The main contract with the logic): 0xF1179405cAeC274e9f19f94A7e8524d86E9d28F0
+  * EternalStorage.sol (The Storage contract that holds state variables): 0xe76cfb944e54639890c6df7225f44fff698506cf
+  
+You can check the info on Rinkeby using these links:
+
+  * EternalStorage.sol
+
+    https://rinkeby.etherscan.io/address/0xe76cfb944e54639890c6df7225f44fff698506cf
+
+  * Media Manager main contract
+
+    https://rinkeby.etherscan.io/address/0xF1179405cAeC274e9f19f94A7e8524d86E9d28F0
+    
+The deployment logs thrown by truffle while migrating these contracts are the following:
+
+-------------------------------------------------------------------------------------------------------------------------------------
+Compiling ./contracts/MediaManager.sol...
+Writing artifacts to ./client/src/contracts
+
+⚠  Important ⚠
+If you're using an HDWalletProvider, it must be Web3 1.0 enabled or your migration will hang.
+
+
+Migrations dry-run (simulation)
+===============================
+> Network name:    'rinkeby-fork'
+> Network id:      4
+> Block gas limit: 7006834
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > account:             0x00512ce9118f797F2a6399d45f944A48920A7330
+   > balance:             2.997152528
+   > gas used:            217981
+   > gas price:           10 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00217981 ETH
+
+   -------------------------------------
+   > Total cost:          0.00217981 ETH
+
+
+2_deploy_contracts.js
+=====================
+
+   Deploying 'EternalStorage'
+   --------------------------
+   > account:             0x75D982726D99f2670e6e1a85EBF8Df69c921401a
+   > balance:             99.99064708
+   > gas used:            935292
+   > gas price:           10 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00935292 ETH
+
+
+   Deploying 'MediaManager'
+   ------------------------
+   > account:             0x75D982726D99f2670e6e1a85EBF8Df69c921401a
+   > balance:             99.94038726
+   > gas used:            5025982
+   > gas price:           10 gwei
+   > value sent:          0 ETH
+   > total cost:          0.05025982 ETH
+
+   -------------------------------------
+   > Total cost:          0.05961274 ETH
+
+
+Summary
+=======
+> Total deployments:   3
+> Final cost:          0.06179255 ETH
+
+⚠  Important ⚠
+If you're using an HDWalletProvider, it must be Web3 1.0 enabled or your migration will hang.
+
+
+Starting migrations...
+======================
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 7004567
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > transaction hash:    0xa23883478d03b8910c5046c951b11816f61b20a3163f6cb486068abdce53f5c8
+   > Blocks: 0            Seconds: 8
+   > contract address:    0xFe4a9546F0BBc7B75a9bFB07343f1421D1cAb25e
+   > account:             0x00512ce9118f797F2a6399d45f944A48920A7330
+   > balance:             2.997002528
+   > gas used:            232981
+   > gas price:           10 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00232981 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.00232981 ETH
+
+
+2_deploy_contracts.js
+=====================
+
+   Deploying 'EternalStorage'
+   --------------------------
+   > transaction hash:    0x6fff9a8bd9d058839273a077f5aa891bc46ec9b51865e31a2a18db75d1c02680
+   > Blocks: 1            Seconds: 24
+   > contract address:    0xE76cFb944e54639890C6Df7225f44FfF698506CF
+   > account:             0x00512ce9118f797F2a6399d45f944A48920A7330
+   > balance:             2.987080258
+   > gas used:            950292
+   > gas price:           10 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00950292 ETH
+
+
+   Deploying 'MediaManager'
+   ------------------------
+   > transaction hash:    0x3cc84d71469c01bcd444b5f8f82aa2730f3cb1290f440e35608da33c3edad338
+   > Blocks: 0            Seconds: 8
+   > contract address:    0xF1179405cAeC274e9f19f94A7e8524d86E9d28F0
+   > account:             0x00512ce9118f797F2a6399d45f944A48920A7330
+   > balance:             2.936118438
+   > gas used:            5096182
+   > gas price:           10 gwei
+   > value sent:          0 ETH
+   > total cost:          0.05096182 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.06046474 ETH
+
+
+Summary
+=======
+> Total deployments:   3
+> Final cost:          0.06279455 ETH
+---------------------------------------------------------------------------------------------------------------------------------
