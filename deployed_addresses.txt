@@ -13,7 +13,7 @@ You can check the info on Rinkeby using these links:
 
     https://rinkeby.etherscan.io/address/0xF1179405cAeC274e9f19f94A7e8524d86E9d28F0
     
-The deployment logs thrown by truffle while migrating these contracts are the following:
+The migration logs thrown by truffle while uploading these contracts are the following:
 
 -------------------------------------------------------------------------------------------------------------------------------------
 Compiling ./contracts/MediaManager.sol...
