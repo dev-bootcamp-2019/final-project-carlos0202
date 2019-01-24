@@ -64,6 +64,7 @@ This Consensys final grade project has been possible thanks to the next tools an
 # How to get started
 
 For local testing, you should be using console terminal to run commands, and have installed the minimum dependencies:
+  * [Node.js and Npm](https://websiteforstudents.com/install-the-latest-node-js-and-nmp-packages-on-ubuntu-16-04-18-04-lts/)
   *	[Git](https://www.digitalocean.com/community/tutorials/how-to-install-git-on-ubuntu-18-04)
   *	[Truffle](https://truffleframework.com/docs/truffle/getting-started/installation)
   *	[Ganache CLI](https://github.com/trufflesuite/ganache-cli)
