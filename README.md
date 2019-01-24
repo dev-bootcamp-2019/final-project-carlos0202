@@ -74,7 +74,11 @@ For local testing, you should be using console terminal to run commands, and hav
   
   
 If you miss any tool, you can click on the tool name in the previous list and will point you to an installation guide for Ubuntu.
-Now let’s get started. First open your command line and start Ganache CLI, without arguments, for fast mining and testing:
+Now let’s get started.
+
+__Note for Unix/Ubuntu users:__ `npm install` command could fail giving permission errors on folders. If that happens you should try to fix your npm/node installation using [this](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) guide. After you can successfully install npm packages on your operative system you can proceed with the next steps detailed here. Note that you need to fix npm problems to install truffle and ganache globally as well. As an alternative you could also install and configure yarn as the package manager of your choice. You can install yarn using the instructions provided [here](https://linuxize.com/post/how-to-install-yarn-on-ubuntu-18-04/). Some links in this guide are targeting Ubuntu 18.04 as the operative system. You could use any other operative system as long as you install all the necessary to build the contracts and run the frontend DApp.
+
+First open your command line and start Ganache CLI, without arguments, for fast mining and testing:
 ```
 ganache-cli
 ```
@@ -89,12 +93,13 @@ Change directory (cd) to the recently cloned project:
 cd consensys-eth-dev-bc-final-project-poa
 ```
 
+
 Install the project dependencies:
 ```
 npm install	
 ```
 
-Compile the contracts, deploy and migrate using Truffle. The project is already pointing to ganache cli default port, but remember to point to the right network using the **--network** flag because the config file points to the localhost and rinkeby networks (rinkeby link is my current testnet link):
+Compile the contracts, deploy and migrate using Truffle. The project is configure to use **8545** as the default port under the *development* network configured on the `truffle-config.js` file, but remember to point to the right port as defined on your local `ganache-cli` running instance. After everything is properly configured you need to compile and migrate the contracts using the following commands:
 ```
 truffle compile
 truffle migrate
