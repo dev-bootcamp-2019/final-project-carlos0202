@@ -20,13 +20,13 @@ This is the landing page of the application and will serve as a startup point wh
 
 In this page you can upload your media content to the proof of existence DApp. It shows a form to register your content info and tags. Your media will be stored on IPFS thanks to the public Infura IPFS nodes. Once you’ve filled the form and click the button to send your media, the metamask window should pop-up for a confirmation. Once the transaction is mined and it succeed, you will see a message of success and the hash corresponding to your proof.
 
-## Gallery Page:
+## My Gallery Page:
   *	**Route path:** */media-gallery*
   *	**Metamask:** *required*
 
 ### Description
 
-A page to display all the proof that are being stored in the DApp by the current user. The gallery it's set to display as much as 2 items per row on large screens, and only 1 item on small screens. Each item shows the title, tags, and the associated content of the image.
+A page to display all the proofs stored in the DApp by the current user. The gallery it's set to display as much as 2 items per row on large screens, and only 1 item on small screens. Each item shows the title, tags, and the associated content of the image. At the bottom of each items there is a section with buttons to allow deleting media and also show it as a single item in the search page.
 
 ## Search page:
   *	**Route path:** */search-media*
