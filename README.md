@@ -66,11 +66,12 @@ This Consensys final grade project has been possible thanks to the next tools an
 For local testing, you should be using console terminal to run commands, and have installed the minimum dependencies:
   * [Node.js and Npm](https://websiteforstudents.com/install-the-latest-node-js-and-nmp-packages-on-ubuntu-16-04-18-04-lts/)
   *	[Git](https://www.digitalocean.com/community/tutorials/how-to-install-git-on-ubuntu-18-04)
+  *	[Node-gyp Node.js native add-on build tool](https://www.npmjs.com/package/node-gyp) to install some Node.js packages
   *	[Truffle](https://truffleframework.com/docs/truffle/getting-started/installation)
   *	[Ganache CLI](https://github.com/trufflesuite/ganache-cli)
   *	[Chrome or Firefox browser](https://www.howtoforge.com/tutorial/ubuntu-latest-browsers-firefox-chromium-opera/)
   *	[Metamask (Chrome extension, or Firefox Add-ons)](https://metamask.io/)
-  *	[Node-gyp Node.js native add-on build tool](https://www.npmjs.com/package/node-gyp) to install some Node.js packages
+  
   
 If you miss any tool, you can click on the tool name in the previous list and will point you to an installation guide for Ubuntu.
 Now let’s get started. First open your command line and start Ganache CLI, without arguments, for fast mining and testing:
