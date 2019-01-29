@@ -85,12 +85,12 @@ ganache-cli
 
 Import the ganache-cli seed phrase into Metamask, to use the default generated addresses in ganache at the browser with Metamask. After opening ganache-cli and imported the seed into Metamask, you will run the next commands in a new command line window (or a new tab). Open it now and clone this Github repository into your machine with Git clone:
 ```
-git clone https://github.com/carlos0202/consensys-eth-dev-bc-final-project-poa.git
+git clone https://github.com/dev-bootcamp-2019/final-project-carlos0202.git
 ```
 
 Change directory (cd) to the recently cloned project:
 ```
-cd consensys-eth-dev-bc-final-project-poa
+cd final-project-carlos0202
 ```
 
 
