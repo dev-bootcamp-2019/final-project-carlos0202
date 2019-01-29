@@ -121,6 +121,11 @@ The last thing to do is start the development server using the next command:
 npm run dev
 ```
 
+If you encounter and error regarding `node-sass` like `ENOENT: no such file or directory, scandir '.../node_modules/node-sass/vendor'` it's because the `node-sass` package didn't build a configuration specific to your operative system or because you have installed packages as `root` on Linux. You can fix non permission issues with `node-sass` by running the following command:
+```
+npm rebuild node-sass
+```
+
 After starting the application, you can point your browser to http://localhost:3000 and start interacting with it. Remember to keep open Ganache CLI and login in Metamask extension to be able to see the application in action.
 
 There is also a production deployed version of this DApp hosted on Heroku that anyone with a wallet and some ether in the rinkeby network can use visiting the following URL:
